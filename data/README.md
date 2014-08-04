@@ -1,7 +1,7 @@
-# Network State Summarization Datasets
+# Reference Datasets
 
 This project contains the documentation for the five real-world datasets used to
-test network state summarization methods.
+test network state compression methods.
 
 ## Datasets
 
@@ -21,16 +21,16 @@ The following is a list of each dataset and their corresponding description.
 
  * **Wikipedia**: **TODO**
 
-## Graph Format
+## Network Format
 
-Each graph consists of two main files, the `*.data` and `*.graph` files.
+Each network consists of two main files, the `*.data` and `*.graph` files.
 
 `*.data` files contain the state corresponding to each node and have the format
 
     <integer>,<double>\n
 
 where the first column is the node ID and the second column is that node's
-value.
+value (or state).
 
 For example:
 
