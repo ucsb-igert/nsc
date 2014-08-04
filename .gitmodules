@@ -1,0 +1,3 @@
+[submodule "algorithms/slice-tree"]
+	path = algorithms/slice-tree
+	url = git://github.com/ucsb-igert/slice-tree.git
