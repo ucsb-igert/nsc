@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Expect this script to run for 10+ hours and to consume 200+ GB of RAM.
+#
+# Usage:
+#     ./process
+# or, because this is a long running task
+#     ./process &> progress &
+
+# Path to the Twitter dataset
+SRC_DIR=../../data/Twitter/raw
+
+# List of the tweet files to process.
+SRC_TWEETS=$SRC_DIR/tweets2009-*.txt
+
+# Map between numeric identifiers and screen names.
+SRC_USERMAP=$SRC_DIR/numeric2screen
+
+# Links between users
+SRC_GRAPH=$SRC_DIR/twitter_rv.net
+
+# Output *.data and *.graph files.
+OUT_DATA=../../data/Twitter/twitter.data
+OUT_GRAPH=../../data/Twitter/twitter.graph
+
+
+# Process the tweets to create the data
+./data --usermap $SRC_USERMAP $SRC_TWEETS > $OUT_DATA
+
+# Process the graph and prune dead edges
+./graph $SRC_GRAPH | ../../tools/prune_edges.py $OUT_DATA > $OUT_GRAPH
