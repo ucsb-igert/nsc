@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Expect this script to run for 2 hours
+#
+# Usage:
+#     ./process
+# or, because this is a long running task
+#     ./process &> progress &
+
+# Raw dataset source directory
+SRC_DIR=../../data/Wikipedia/raw
+
+# Tar files to extract
+SRC_WIKIVIEWS=$SRC_DIR/wiki-views-*-day.txt.tar.gz
+
+# Links between pages
+SRC_GRAPH=$SRC_DIR/wiki-links-graph.txt
+
+# Mapping between numeric identifiers and page names.
+SRC_PAGE_MAP=$SRC_DIR/wiki-page-map.txt
+
+# Output directory
+OUT_DIR=../../data/Wikipedia/
+
+# Output graph file.
+OUT_GRAPH=$OUT_DIR/wiki-links.graph
+
+
+# Extract each archive
+for f in $SRC_WIKI_VIEWS; do
+    if ! [ -f $(basename $f .tar.gz) ]; then
+        tar -xvf $f --directory $OUT_DIR
+    fi
+done
+
+# Compile the data processing program
+echo "Compiling 'data.cpp'..."
+g++ -O3 data.cpp -o data
+
+# Find the number of pages
+PAGE_COUNT=$(wc -l < $SRC_PAGE_MAP)
+
+# Process the page views.
+for f in $OUT_DIR/wiki-views-*-day.txt; do
+    echo "Processing '$f'..."
+    ./data $PAGE_COUNT < $f > $OUT_DIR/$(basename $f .txt).data
+done
+
+# Process the graph file.
+./graph < $SRC_GRAPH > $OUT_GRAPH

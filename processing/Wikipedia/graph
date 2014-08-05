@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Usage: ./graph < wiki-links-graph.txt > wikipedia.graph
+#
+# This simply removes the last column of the links graph.
+sed 's/,[0-9]\+$//'
