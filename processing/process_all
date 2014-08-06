@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Usage: ./process_all
+
+./Human/process
+
+./Wikipedia/process
+
+./Twitter/process
