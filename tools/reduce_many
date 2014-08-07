@@ -1,0 +1,11 @@
+#!/bin/env python3.4
+
+import reduce
+
+if __name__ == "__main__":
+    # Generate graphs with these node counts.
+    reductions = [50, 100, 250, 500, 1000, 10000, 50000, 100000]
+
+    # Reduce the graph
+    reduce.reduce_graphs("twitter.data", "twitter.graph",
+            "twitter_%d.data", "twitter_%d.graph", reductions)
