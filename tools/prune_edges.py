@@ -14,14 +14,9 @@ def read_data(f):
 
     for line in f:
         values = line.strip().split(",", 1)
-        data.add(int(values[0]))
+        data.add(values[0])
 
     return data
-
-def edges(f):
-    for line in f:
-        values = line.strip().split(",", 2)
-        yield (int(values[0]), int(values[1]))
 
 def main(args):
     stderr.write("Reading nodes...")
@@ -29,8 +24,9 @@ def main(args):
     data = read_data(args.data)
     stderr.write(" Done.\n")
 
-    for a, b in edges(stdin):
-        if a in data and b in data:
+    for line in stdin:
+        values = line.strip().split(",", 2)
+        if values[0] in data and values[1] in data:
             stdout.write(line)
 
 if __name__ == "__main__":

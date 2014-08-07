@@ -35,21 +35,19 @@ def bfs(center, graph, visited):
     """Iterates over nodes starting at the specified center node in a
     breadth-first search."""
 
-    queue = [(None, center)]
+    queue = [center]
     visited.add(center)
 
     while queue:
-        parent, node = queue.pop()
-        yield (False, parent, node)
+        node = queue.pop()
+        yield node
 
         # Queue all outgoing nodes
         try:
             for child in graph[node]:
-                if child in visited:
-                    yield (True, node, child)
-                else:
+                if child not in visited:
                     visited.add(child)
-                    queue.append((node, child))
+                    queue.append(child)
         except KeyError:
             pass
 
@@ -59,13 +57,13 @@ def reduce_graph(data, graph, count, fdataout, fgraphout):
     # Nodes visited.
     visited_nodes = set([])
 
-    # Total number of nodes taken from the network.
-    taken = 0
+    # Nodes taken from the graph
+    taken = set([])
 
     # Take nodes from the larger graph and build the smaller graph with those
     # nodes. We do a breadth-first search from a randomly chosen center until it
     # is exhausted and then choose a new random center to search from.
-    while taken < count:
+    while len(taken) < count:
         # Pool of nodes to choose a center from
         pool = nodes - visited_nodes
         if not pool:
@@ -74,21 +72,25 @@ def reduce_graph(data, graph, count, fdataout, fgraphout):
         # Choose a random center to start from
         center = random.choice(list(pool))
 
-        for visited, parent, node in bfs(center, graph, visited_nodes):
-            if node not in nodes or parent not in nodes:
+        for node in bfs(center, graph, visited_nodes):
+            if node not in nodes:
                 continue
 
-            # Write the node
-            if not visited:
-                fdataout.write("%d,%f\n" % (node, data[node]))
-                taken += 1
+            taken.add(node)
 
-            # Write the edge we traversed to get to this node.
-            if parent:
-                fgraphout.write("%d,%d\n" % (parent, node))
-
-            if taken >= count:
+            if len(taken) >= count:
                 break
+
+    # Write out the chosen nodes and the links between them.
+    for node in taken:
+        fdataout.write("%d,%f\n" % (node, data[node]))
+
+        try:
+            for child in graph[node]:
+                if child in taken:
+                    fgraphout.write("%d,%d\n" % (node, child))
+        except KeyError:
+            pass
 
 def reduce_graphs(fdata, fgraph, datafmt, graphfmt, counts):
     print("Reading data...", file=stderr)
@@ -115,7 +117,7 @@ def main(args):
     graph = read_graph(args.graphin)
     stderr.write(" Done.\n")
 
-    stderr.write("Reducing to %d nodes...")
+    stderr.write("Reducing to %d nodes..." % args.count)
     stderr.flush()
     reduce_graph(data, graph, args.count, args.dataout, args.graphout)
     stderr.write(" Done.\n")
