@@ -3,6 +3,9 @@
 Creates an attributes file of Twitter where each node is a Twitter user. The
 value of a node is the average response time to retweet by that user.
 """
+
+#BIGDATA
+
 from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import

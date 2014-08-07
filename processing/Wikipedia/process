@@ -7,6 +7,8 @@
 # or, because this is a long running task
 #     ./process &> progress &
 
+cd $(dirname $0)
+
 # Raw dataset source directory
 SRC_DIR=../../data/Wikipedia/raw
 
@@ -20,14 +22,14 @@ SRC_GRAPH=$SRC_DIR/wiki-links-graph.txt
 SRC_PAGE_MAP=$SRC_DIR/wiki-page-map.txt
 
 # Output directory
-OUT_DIR=../../data/Wikipedia/
+OUT_DIR=../../data/Wikipedia
 
 # Output graph file.
 OUT_GRAPH=$OUT_DIR/wiki-links.graph
 
 
 # Extract each archive
-for f in $SRC_WIKI_VIEWS; do
+for f in $SRC_WIKIVIEWS; do
     if ! [ -f $(basename $f .tar.gz) ]; then
         tar -xvf $f --directory $OUT_DIR
     fi
@@ -36,6 +38,8 @@ done
 # Compile the data processing program
 echo "Compiling 'data.cpp'..."
 g++ -O3 data.cpp -o data
+
+exit
 
 # Find the number of pages
 PAGE_COUNT=$(wc -l < $SRC_PAGE_MAP)

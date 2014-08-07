@@ -1,6 +1,3 @@
 #!/bin/sh
 # Usage: ./graph < twitter_rv.net > twitter.graph
 sed 's/^\([0-9]\+\)\t\([0-9]\+\)$/\1,\2/'
-
-# FIXME: This output should not contain nodes that do not exist in the data
-# file.

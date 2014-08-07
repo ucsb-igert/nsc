@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Reduces the Twitter dataset to more manageable sizes.
+#
+# Usage:
+#     $ ./reduce
+# or, because this may take a long time, use
+#     $ ./reduce &> progress &
+
+cd $(dirname $0)
+
+DATA=../../data/Twitter/twitter.data
+GRAPH=../../data/Twitter/twitter.graph
+
+REDUCED_DIR=../../data/Twitter/reduced
+
+REDUCED_DATA=$REDUCED_DIR/twitter_%d.data
+REDUCED_GRAPH=$REDUCED_DIR/twitter_%d.graph
+
+# Graph reduction tool
+REDUCE=../../tools/reduce_many
+
+mkdir -p $REDUCED_DIR
+
+$REDUCE $DATA $GRAPH $REDUCED_DATA $REDUCED_GRAPH \
+    -n 50 100 250 500 1000 10000 50000 100000
+

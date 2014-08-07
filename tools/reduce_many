@@ -1,11 +1,22 @@
 #!/bin/env python3.4
 
 import reduce
+import argparse
 
 if __name__ == "__main__":
-    # Generate graphs with these node counts.
-    reductions = [50, 100, 250, 500, 1000, 10000, 50000, 100000]
+
+    parser = argparse.ArgumentParser(
+        description="Reduces a graph using a breadth-first search starting at the specified node."
+        )
+    parser.add_argument("datain", type=argparse.FileType("r"),
+        help="Data input file.")
+    parser.add_argument("graphin", type=argparse.FileType("r"),
+        help="Graph input file.")
+    parser.add_argument("dataoutfmt", help="Data output file.")
+    parser.add_argument("graphoutfmt", help="Graph output file.")
+    parser.add_argument("-n", nargs="+", type=int, default=[100], help="List of number of nodes to take.")
+
+    args = parser.parse_args()
 
     # Reduce the graph
-    reduce.reduce_graphs("twitter.data", "twitter.graph",
-            "twitter_%d.data", "twitter_%d.graph", reductions)
+    reduce.reduce_graphs(args.datain, args.graphin, args.dataoutfmt, args.graphoutfmt, args.n)

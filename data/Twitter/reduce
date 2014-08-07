@@ -1,2 +1,0 @@
-#!/bin/sh
-PYTHONPATH=$(readlink -m ../..) python3.4 reduce.py

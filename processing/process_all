@@ -3,7 +3,10 @@
 # Usage: ./process_all
 
 ./Human/process
+./Human/reduce
 
 ./Wikipedia/process
+./Wikipedia/reduce
 
 ./Twitter/process
+./Twitter/reduce

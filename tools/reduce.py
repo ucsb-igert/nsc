@@ -90,21 +90,18 @@ def reduce_graph(data, graph, count, fdataout, fgraphout):
             if taken >= count:
                 break
 
-def reduce_graphs(data_file, graph_file, datafmt, graphfmt, counts):
-    with open(data_file, "r") as fdata, \
-            open(graph_file, "r") as fgraph:
-        print("Reading data...", file=sys.stderr)
-        data = read_data(fdata)
+def reduce_graphs(fdata, fgraph, datafmt, graphfmt, counts):
+    print("Reading data...", file=stderr)
+    data = read_data(fdata)
 
-        print("Reading graph...", file=sys.stderr)
-        graph = read_graph(fgraph)
+    print("Reading graph...", file=stderr)
+    graph = read_graph(fgraph)
 
-        for r in counts:
-            with open(datafmt % r, "w") as fdataout, \
-                    open(graphfmt % r, "w") as fgraphout:
-                print("Reducing to %d nodes..." % r, file=sys.stderr)
-                reduce_graph(data, graph, r, fdataout, fgraphout)
-
+    for r in counts:
+        with open(datafmt % r, "w") as fdataout, \
+                open(graphfmt % r, "w") as fgraphout:
+            print("Reducing to %d nodes..." % r, file=stderr)
+            reduce_graph(data, graph, r, fdataout, fgraphout)
 
 
 def main(args):
