@@ -1,9 +1,14 @@
-#!/bin/env python3.4
+#!/bin/env python2.7
 """
 Reduces a graph to the number of specified nodes.
 
 Author: Jason White
 """
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import division
+
 from sys import stderr
 import argparse
 import random

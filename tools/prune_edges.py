@@ -1,4 +1,4 @@
-#!/bin/env python3.4
+#!/bin/env python2.7
 """
 Filters edges that are not in the list of nodes.
 
@@ -6,6 +6,7 @@ Author: Jason White
 
 Usage: ./prune_edges mydataset.data < mydataset.graph | less
 """
+
 from sys import stdin, stderr, stdout
 import argparse
 

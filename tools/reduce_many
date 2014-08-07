@@ -1,4 +1,4 @@
-#!/bin/env python3.4
+#!/bin/env python2.7
 
 import reduce
 import argparse
