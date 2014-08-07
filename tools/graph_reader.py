@@ -1,4 +1,9 @@
 #!/bin/env python2.7
+"""
+Reads graph structures and values from text files.
+
+Author: Ali Hajimirza (ali@alihm.net)
+"""
 import numpy as np
 from scipy.sparse import *
 import scipy
