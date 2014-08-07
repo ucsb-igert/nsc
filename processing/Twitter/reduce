@@ -9,13 +9,13 @@
 
 cd $(dirname $0)
 
-DATA=../../data/Twitter/twitter.data
-GRAPH=../../data/Twitter/twitter.graph
+BASE=../../data/Twitter
 
-REDUCED_DIR=../../data/Twitter/reduced
+DATA=$BASE/twitter.data
+GRAPH=$BASE/twitter.graph
 
-REDUCED_DATA=$REDUCED_DIR/twitter_%d.data
-REDUCED_GRAPH=$REDUCED_DIR/twitter_%d.graph
+REDUCED_DATA=$BASE/reduced/twitter_%d.data
+REDUCED_GRAPH=$BASE/reduced/twitter_%d.graph
 
 # Graph reduction tool
 REDUCE=../../tools/reduce_many
