@@ -26,4 +26,12 @@ $ ./processing/process_all
 
 See `processing/README.md` for more details.
 
-## Analysis
+## Experiments
+
+After processing the datasets, experiments can be run on them. To run them all,
+do
+```bash
+$ ./experiments/run_all
+```
+
+See `experiments/README.md` for more details.
