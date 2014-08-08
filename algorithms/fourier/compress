@@ -1,0 +1,29 @@
+#!/bin/env python2.7
+"""
+Compresses a network using the Spectral Graph Fourier method.
+
+Author: Ali Hajimirza (ali@alihm.net)
+"""
+import .fourier
+import sys
+from os import path
+
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+import tools.graph_reader as graph_reader
+
+parser = argparse.ArgumentParser(
+    description="Decompresses a network using the Spectral Graph Fourier method."
+    )
+parser.add_argument("graph", type=argparse.FileType("rb"),
+    help="Graph input file.")
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    graph = graph_reader.read_graph(args.graph, len(data))
+
+    if args.budget == 0:
+        args.budget = len(data)/2
+
+    decompress_graph(graph, sys.stdin)
+

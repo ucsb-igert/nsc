@@ -1,4 +1,3 @@
-#!/bin/env python2.7
 """
 Fourier transform on graphs.
 
@@ -7,16 +6,12 @@ This module provides methods to compress a graph using the fourier transform met
 Author: Ali Hajimirza (ali@alihm.net)
 """
 from os import path
-import sys
-sys.path.append(path.dirname(path.realpath(path.join(__file__, '..'))))
-import tools.graph_reader as graph_reader
+from sys import stderr
 from scipy.sparse import csgraph
 from scipy import linalg
 import numpy as np
-import argparse
-import os
 
-def compress_graph(csr_matrix, node_value, budget, name, compression_type=3, dest=''):
+def compress_graph(csr_matrix, node_value, budget, f, compression_type=3):
     """
     Compress the node values of a compressed row matrix and saves it to the disk.
 
@@ -32,8 +27,8 @@ def compress_graph(csr_matrix, node_value, budget, name, compression_type=3, des
         The number of eigenvectors to use for the decompression. This value should
         be between 1 and size of the nodes.
 
-    name: string
-        Name of the file to be saved on the disk.
+    f: file path or handle
+        File to save the compressed graph to.
 
     compression_type: int, optional
         compression_type = 1: uses the highest x number of signal values.
@@ -53,10 +48,10 @@ def compress_graph(csr_matrix, node_value, budget, name, compression_type=3, des
     node_signal_value = to_signal_domain(node_value, eig_vals, eig_vecs)
     elements = compress_method(node_signal_value, compression_type, budget)
     error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
-    sys.stderr.write('Graph was compressed with a budget of {} and error of {}.\n'.format(budget, error))
-    np.savez_compressed(os.path.join(dest, name + '.npz'), signal=node_signal_value[elements], position=elements)
+    stderr.write('Graph was compressed with a budget of {} and error of {}.\n'.format(budget, error))
+    np.savez(name, signal=node_signal_value[elements], position=elements)
 
-def decompress_graph(csr_matrix, compressed_file):
+def decompress_graph(csr_matrix, f):
     """
     Reads and decompresses the values for a node.
 
@@ -65,19 +60,19 @@ def decompress_graph(csr_matrix, compressed_file):
     csr_matrix: scipy csr_matrix
         The adjacency matrix of the graph.
 
-    compressed_file: file
-        compressed graph file. (.npz)
+    f: file path or handle
+        Compressed graph file. (.npz)
 
     Returns
     -------
     decompressed_vals: numpy array
         Returns the values reconstructed by the fourier algorithm
     """
-    sys.stderr.write('Loading the file...\n')
-    data = np.load(compressed_file)
+    stderr.write('Loading the file...\n')
+    data = np.load(f)
     node_signal_value = data['signal']
     elements = data['position']
-    sys.stderr.write('Signal file loaded.\n')
+    stderr.write('Signal file loaded.\n')
     eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
     decompressed_vals = to_graph_domain(node_signal_value, eig_vecs[:,elements])
     return decompressed_vals
@@ -99,10 +94,10 @@ def laplacian_eigs(csr_matrix):
         The normalized left eigenvector corresponding to the eigenvalue
         ``w[i]`` is the column v[:,i].
     """
-    sys.stderr.write('Computing Eigenvectors...')
+    stderr.write('Computing Eigenvectors...')
     lap = csgraph.laplacian(csr_matrix, normed=False)
     eig_vals, eig_vecs = linalg.eigh(lap.todense(), type=3)
-    sys.stderr.write('\rEigenvector decomposition complete.\n')
+    stderr.write('\rEigenvector decomposition complete.\n')
     return eig_vals, eig_vecs
 
 def to_signal_domain(node_value, eig_vals, eig_vecs):
@@ -189,7 +184,7 @@ def compress_method(node_signal_values, type, count):
     Returns
     -------
     elements: numpy array
-        The indices of the signal values and eigenvectors to be kept. 
+        The indices of the signal values and eigenvectors to be kept.
 
     Raises
     -------
@@ -207,11 +202,3 @@ def compress_method(node_signal_values, type, count):
     elif type == 3:
         elements = np.append(elements[:count/2], elements[-count/2:])
     return elements
-
-if __name__ == '__main__':
-    node_value = graph_reader.read_node_values(open('traffic_0.data', 'rb'))
-    graph = graph_reader.read_graph(open('traffic.graph', 'rb'), len(node_value))
-    budget = len(node_value)/2
-    compress_graph(graph, node_value, budget, 'name of the file')
-
-
