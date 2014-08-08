@@ -101,7 +101,7 @@ def laplacian_eigs(csr_matrix):
     """
     sys.stderr.write('Computing Eigenvectors...')
     lap = csgraph.laplacian(csr_matrix, normed=False)
-    eig_vals, eig_vecs = linalg.eigh(lap, type=3)
+    eig_vals, eig_vecs = linalg.eigh(lap.todense(), type=3)
     sys.stderr.write('\rEigenvector decomposition complete.\n')
     return eig_vals, eig_vecs
 
@@ -208,30 +208,10 @@ def compress_method(node_signal_values, type, count):
         elements = np.append(elements[:count/2], elements[-count/2:])
     return elements
 
-def test():
-    np.set_printoptions(suppress=True)
-    G = np.array([
-        [0, 1, 1, 0, 0],
-        [1, 0, 1, 1, 0],
-        [1, 1, 0, 1, 0],
-        [0, 1, 1, 0, 1],
-        [0, 0, 0, 1, 0]
-        ])
-    f_i = np.array([1,5,7, 4, 3])
-
-    compress_graph(G, f_i, 5, 'test')
-    decompress_graph(G, 'test.npz')
-    os.remove('test.npz')
-
 if __name__ == '__main__':
-    test()
-    # parser = argparse.ArgumentParser(description='Fourier compression.')
-    # parser.add_argument('compress', choices=['-c', '-u'])
-    # parser.parse_args()
-    # print parser.compress
-    # parser.add_argument('graph', type=argparse.FileType('rb'), help='.graph file that contains the links between the nodes.')
-    # parser.add_argument('data', type=argparse.FileType('rb'), help='.graph file that contains the links between the nodes.')
-    # parser.add_argument('title', default=None, help='.graph file that contains the links between the nodes.')
-
+    node_value = graph_reader.read_node_values(open('traffic_0.data', 'rb'))
+    graph = graph_reader.read_graph(open('traffic.graph', 'rb'), len(node_value))
+    budget = len(node_value)/2
+    compress_graph(graph, node_value, budget, 'name of the file')
 
 
