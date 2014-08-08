@@ -1,90 +1,215 @@
 #!/bin/env python2.7
+"""
+Fourier transform on graphs.
+
+This module provides methods to compress a graph using the fourier transform method.
+
+Author: Ali Hajimirza (ali@alihm.net)
+"""
+from os import path
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '..'))))
+import tools.graph_reader as graph_reader
 from scipy.sparse import csgraph
-import multiprocessing
-from multiprocessing import Pool
-import matplotlib.pyplot as plt
 from scipy import linalg
 import numpy as np
-import sys
+import argparse
+import os
 
-def compress_graph(adjacency_matrix, node_value):
-    node_signal_value = to_signal_domain(adjacency_matrix, node_signal_value)
-    # write to a file(decide on number of signals to save)
+def compress_graph(csr_matrix, node_value, budget, name, compression_type=3, dest=''):
+    """
+    Compress the node values of a compressed row matrix and saves it to the disk.
 
-def reconsruct_graph(adjacency_matrix, signal_file):
-    pass
+    Parameters
+    ----------
+    csr_matrix: scipy csr_matrix
+        The adjacency matrix of the graph.
 
-def to_signal_domain(adjacency_matrix, node_value):
-    sys.stderr.write('Computing Eigenvectors...\n')
-    lap = csgraph.laplacian(adjacency_matrix, normed=False)
-    del adjacency_matrix
+    node_value: numpy array
+        Values of the nodes to be compressed.
+
+    budget: int
+        The number of eigenvectors to use for the decompression. This value should
+        be between 1 and size of the nodes.
+
+    name: string
+        Name of the file to be saved on the disk.
+
+    compression_type: int, optional
+        compression_type = 1: uses the highest x number of signal values.
+        compression_type = 2: uses the lowest x number of signal values.
+        compression_type = 2: uses x number of the extrema (absolute value) signal values.
+
+    dest: string, optional
+        The path to save the graph.
+
+    Returns
+    -------
+    None
+        Saves file to the disk.
+
+    """
+    eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
+    node_signal_value = to_signal_domain(node_value, eig_vals, eig_vecs)
+    elements = compress_method(node_signal_value, compression_type, budget)
+    error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
+    sys.stderr.write('Graph was compressed with a budget of {} and error of {}.\n'.format(budget, error))
+    np.savez_compressed(os.path.join(dest, name + '.npz'), signal=node_signal_value[elements], position=elements)
+
+def decompress_graph(csr_matrix, compressed_file):
+    """
+    Reads and decompresses the values for a node.
+
+    Parameters
+    ----------
+    csr_matrix: scipy csr_matrix
+        The adjacency matrix of the graph.
+
+    compressed_file: file
+        compressed graph file. (.npz)
+
+    Returns
+    -------
+    decompressed_vals: numpy array
+        Returns the values reconstructed by the fourier algorithm
+    """
+    sys.stderr.write('Loading the file...\n')
+    data = np.load(compressed_file)
+    node_signal_value = data['signal']
+    elements = data['position']
+    sys.stderr.write('Signal file loaded.\n')
+    eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
+    decompressed_vals = to_graph_domain(node_signal_value, eig_vecs[:,elements])
+    return decompressed_vals
+
+def laplacian_eigs(csr_matrix):
+    """
+    Computes the eigenvalues and eigenvectors of the laplacian matrix.
+
+    Parameters
+    ----------
+    csr_matrix: scipy csr_matrix
+        The adjacency matrix of the graph.
+
+    Returns
+    -------
+    eig_vals : (M,) double or complex ndarray
+        The eigenvalues, each repeated according to its multiplicity.
+    eig_vecs : (M, M) double or complex ndarray
+        The normalized left eigenvector corresponding to the eigenvalue
+        ``w[i]`` is the column v[:,i].
+    """
+    sys.stderr.write('Computing Eigenvectors...')
+    lap = csgraph.laplacian(csr_matrix, normed=False)
     eig_vals, eig_vecs = linalg.eigh(lap, type=3)
-    sys.stderr.write('Eigenvector decomposition complete.\n')
+    sys.stderr.write('\rEigenvector decomposition complete.\n')
+    return eig_vals, eig_vecs
+
+def to_signal_domain(node_value, eig_vals, eig_vecs):
+    """
+    Transforms the node values from graph domain to signal domain.
+
+    Parameters
+    ----------
+    node_value: numpy array
+        Values of the nodes to be compressed.
+
+    eig_vals : (M,) double or complex ndarray
+        The eigenvalues, each repeated according to its multiplicity.
+
+    eig_vecs : (M, M) double or complex ndarray
+        The normalized left eigenvector corresponding to the eigenvalue
+        ``w[i]`` is the column v[:,i].
+
+    Returns
+    -------
+    node_signal_value: numpy array
+        Returns the equivalent signal values.
+    """
     node_signal_value = np.zeros(len(node_value))
     for i, eig_val in enumerate(eig_vals):
         node_signal_value[i] = np.dot(node_value, eig_vecs[:,i])
-    return node_signal_value, eig_vecs
+    return node_signal_value
 
 def to_graph_domain(node_signal_values, eig_vecs):
+    """
+    Transforms the node values from graph domain to signal domain.
+
+    Parameters
+    ----------
+    node_signal_values: numpy array
+        Values of nodes in the signal domain.
+
+    eig_vecs : (M, M) double or complex ndarray
+        The normalized left eigenvector corresponding to the signal values.
+
+    Returns
+    -------
+    node_signal_value: numpy array
+        Returns the equivalent signal values.
+    """
     original_value = np.zeros(len(eig_vecs))
     for i, eig_vec in enumerate(eig_vecs):
         original_value[i] = np.dot(node_signal_values, eig_vec)
     return original_value
 
-def SSE_compress_graph(adjacency_matrix, node_value, parallel=True):
-    node_signal_values, eig_vecs = to_signal_domain(adjacency_matrix, node_value)
-    del adjacency_matrix
-    size = len(node_value)
-    sse = np.zeros((size, 3))
-    if parallel:
-        pass
-        # p = Pool(multiprocessing.cpu_count())
-        # for i in xrange(size):
-        #   res = p.apply(parallel_SSE_helper, args = (node_value,node_signal_values, eig_vecs, i))
-        #   sse[i] = res
-        # p.close()
-        # p.join()
-    else:
-        p = 0
-        for i in xrange(size):
-            p1 = int((i * 100.0)/size)
-            if p != p1:
-                p = p1
-                sys.stderr.write('\rReconstructing graph {}%'.format(p))
-            res = parallel_SSE_helper(node_value, node_signal_values, eig_vecs, i)
-            sse[i] = res
-    # Rearranging the values so each set of sse is in one array.
-    sys.stderr.write('\rReconstruction complete.\n')
-    return np.swapaxes(sse,0,1)
+def SSE(original, compressed):
+    """
+    Computes the Residual sum of squares for the compressed values.
 
-def parallel_SSE_helper(node_value, node_signal_values, eig_vecs, i):
-    res = np.zeros(3)
-    for t in xrange(3):
-        res[t] = SSE(node_value, uncompress_method(node_signal_values, eig_vecs, type=t+1, count=i+1))
-    return res
+    Parameters
+    ----------
+    original: numpy array
+        Values of nodes before compression.
 
-def uncompress_method(node_signal_values, eig_vecs, type=3 ,count=None):
-    # Find the incidences of the highest f_signal and truncate the matrix
+    original: numpy array
+        Values of nodes after compression.
+
+    Returns
+    -------
+    sse: int
+        Compression error.
+    """
+    return np.sum(np.square(np.subtract(original, compressed)))
+
+def compress_method(node_signal_values, type, count):
+    """
+    Chooses the signal values to be saved based on their value.
+
+    Parameters
+    ----------
+    node_signal_values: numpy array
+        Values of nodes in the signal domain.
+
+    type: int, optional
+        type = 1: uses the highest x number of signal values.
+        type = 2: uses the lowest x number of signal values.
+        type = 2: uses x number of the extrema (absolute value) signal values.
+
+    Returns
+    -------
+    elements: numpy array
+        The indices of the signal values and eigenvectors to be kept. 
+
+    Raises
+    -------
+    Exception:
+        If the value of the count is not between 1 to size of the node_signal_values.
+    """
+    if count > len(node_signal_values) or count < 1:
+        raise Exception('{} is not a valid count.'.format(count))
     elements = np.argsort(node_signal_values)
     if type == 1:
-        if count:
-            elements = elements[:count]
+        elements = elements[:count]
     elif type == 2:
         elements = elements[::-1]
-        if count:
-            elements = elements[:count]
+        elements = elements[:count]
     elif type == 3:
-        if count:
-            elements = np.append(elements[:count/2], elements[-count/2:])
-    return to_graph_domain(node_signal_values[elements] ,eig_vecs[:,elements])
+        elements = np.append(elements[:count/2], elements[-count/2:])
+    return elements
 
-def SSE(original, perturbed):
-    return np.sum(np.square(np.subtract(original, perturbed)))
-
-
-if __name__ == '__main__':
+def test():
     np.set_printoptions(suppress=True)
-"""
     G = np.array([
         [0, 1, 1, 0, 0],
         [1, 0, 1, 1, 0],
@@ -94,24 +219,19 @@ if __name__ == '__main__':
         ])
     f_i = np.array([1,5,7, 4, 3])
 
-    print SSE_compress_graph(G, f_i, parallel=False)
-"""
-"""
-sparse
-    from scipy.sparse import *
-    import scipy
-    import scipy.sparse.linalg as LA
-    row = np.array([0,0,1,1,1,2,2,2,3,3,3,4])
-    col = np.array([1,2,0,2,3,0,1,3,1,2,4,3])
-    data = np.ones(12)
-    G = scipy.sparse.csr_matrix( (data,(row,col)), shape=(5,5) )
+    compress_graph(G, f_i, 5, 'test')
+    decompress_graph(G, 'test.npz')
+    os.remove('test.npz')
 
-    lap = csgraph.laplacian(G, normed=False)
+if __name__ == '__main__':
+    test()
+    # parser = argparse.ArgumentParser(description='Fourier compression.')
+    # parser.add_argument('compress', choices=['-c', '-u'])
+    # parser.parse_args()
+    # print parser.compress
+    # parser.add_argument('graph', type=argparse.FileType('rb'), help='.graph file that contains the links between the nodes.')
+    # parser.add_argument('data', type=argparse.FileType('rb'), help='.graph file that contains the links between the nodes.')
+    # parser.add_argument('title', default=None, help='.graph file that contains the links between the nodes.')
 
 
-
-    eig_val, eig_vecs = LA.eigs(lap, k=3)
-    print eig_val
-    print eig_vecs
-"""
 
