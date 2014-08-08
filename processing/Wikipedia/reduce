@@ -11,10 +11,9 @@ cd $(dirname $0)
 
 BASE=../../data/Wikipedia
 
-DATA=$BASE/wiki-views-2008-day.data
-GRAPH=$BASE/wiki-links.graph
-
 REDUCED_DIR=$BASE/reduced
+
+GRAPH=$BASE/wiki-links.graph
 
 # Graph reduction tool
 REDUCE=../../tools/reduce_many

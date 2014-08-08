@@ -1,3 +1,5 @@
 *.graph
 *.data
 *.keymap
+*.stats
+*/raw/*

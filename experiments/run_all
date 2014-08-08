@@ -1,4 +1,7 @@
 #!/bin/sh
 for d in */ ; do
-    ./$d/run
+    RUN=./$d/run
+    if [ -f $RUN ]; then
+        $RUN
+    fi
 done
