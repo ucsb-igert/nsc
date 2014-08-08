@@ -1,4 +1,4 @@
-#!/bin/env python3.4
+#!/bin/env python2.7
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -147,12 +147,3 @@ def Test ():
 
 if __name__ == '__main__':
     Test()
-
-
-
-
-
-
-
-
-
