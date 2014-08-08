@@ -5,4 +5,4 @@ repository.
 Author: Jason White
 """
 
-__all__ = ["twitter", "wikipedia", "dirs"]
+__all__ = ["dblp", "human", "paths", "synthetic", "traffic", "twitter", "wikipedia"]
