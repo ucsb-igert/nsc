@@ -1,10 +1,11 @@
 #!/bin/env python2.7
 """
-Compresses a network using the Spectral Graph Fourier method.
+Decompresses a network using the Spectral Graph Fourier method.
 
 Author: Ali Hajimirza (ali@alihm.net)
 """
-import .fourier
+import fourier
+import argparse
 import sys
 from os import path
 
@@ -12,25 +13,20 @@ sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
 import tools.graph_reader as graph_reader
 
 parser = argparse.ArgumentParser(
-    description="Compresses a network using the Spectral Graph Fourier method."
+    description="Decompresses a network using the Spectral Graph Fourier method."
     )
-parser.add_argument("data", type=argparse.FileType("rb"),
-    help="Data input file.")
 parser.add_argument("graph", type=argparse.FileType("rb"),
-    help="Graph input file.")
-parser.add_argument("--signal", type=argparse.FileType("wb"),
-    default=stdout, help="Signal output file.")
-parser.add_argument("--budget", type=int, default=0,
-    help="The number of eigenvectors to use for the decompression. This value should be between 1 and size of the nodes.")
+    help="Input graph file.")
+parser.add_argument("signal", type=argparse.FileType("rb"),
+    help="Input signal values.")
 
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    data = graph_reader.read_node_values(args.data)
     graph = graph_reader.read_graph(args.graph, len(data))
 
     if args.budget == 0:
         args.budget = len(data)/2
 
-    compress_graph(graph, data, args.budget, sys.stdout)
+    fourier.decompress_graph(graph, args.signal)
 
