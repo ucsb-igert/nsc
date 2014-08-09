@@ -11,7 +11,7 @@ from scipy.sparse import csgraph
 from scipy import linalg
 import numpy as np
 
-def compress_graph(csr_matrix, node_value, budget, f, compression_type=3):
+def compress(csr_matrix, node_value, budget, f, compression_type=3):
     """
     Compress the node values of a compressed row matrix and saves it to the disk.
 
@@ -51,7 +51,7 @@ def compress_graph(csr_matrix, node_value, budget, f, compression_type=3):
     stderr.write('Graph was compressed with a budget of {} and error of {}.\n'.format(budget, error))
     np.savez(f, signal=node_signal_value[elements], position=elements)
 
-def decompress_graph(csr_matrix, f):
+def decompress(csr_matrix, f):
     """
     Reads and decompresses the values for a node.
 

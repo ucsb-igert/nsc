@@ -28,5 +28,5 @@ if __name__ == '__main__':
     if args.budget == 0:
         args.budget = len(data)/2
 
-    fourier.decompress_graph(graph, args.signal)
+    fourier.decompress(graph, args.signal)
 

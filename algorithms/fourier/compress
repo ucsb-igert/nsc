@@ -33,5 +33,5 @@ if __name__ == '__main__':
     if args.budget == 0:
         args.budget = len(data)/2
 
-    fourier.compress_graph(graph, data, args.budget, f=args.signal)
+    fourier.compress(graph, data, args.budget, f=args.signal)
 
