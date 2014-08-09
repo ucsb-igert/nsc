@@ -1,11 +1,11 @@
-#!/bin/env python3.4
+#!/bin/env python2.7
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
 
-def bar_chart(data_arrays, xlabel, ylabel, legend, title, dest='', width=0.25, color=['r','g', 'b', 'c', 'k', 'y','m']):
+def bar_chart(data_arrays, xlabel, ylabel, legend, title, f, width=0.25, color=['r', 'g', 'b', 'c', 'k', 'y', 'm']):
     """
     Plots a bar chart.
 
@@ -28,7 +28,7 @@ def bar_chart(data_arrays, xlabel, ylabel, legend, title, dest='', width=0.25, c
     title: string
         The title of the graph. Will be used as the name of the graph file.
 
-    dest: string, optional
+    f: string or file-like object
         Path to the directory to save the image.
 
     width: float, optional
@@ -53,7 +53,7 @@ def bar_chart(data_arrays, xlabel, ylabel, legend, title, dest='', width=0.25, c
     ax.set_xticks(ind + width)
     ax.set_xticklabels(xlabel)
     ax.legend([plot[0] for plot in plots], legend)
-    plt.savefig(os.path.join(dest, title + '.png'))
+    plt.savefig(f, format="png")
     plt.clf()
 
 def scatter_plot(data_arrays, xlabel, ylabel, labels, title, dest=''):
@@ -147,12 +147,3 @@ def Test ():
 
 if __name__ == '__main__':
     Test()
-
-
-
-
-
-
-
-
-

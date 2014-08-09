@@ -1,3 +1,72 @@
-#!/bin/sh
+#!/bin/env python2.7
+"""
+Runs the scalability experiment.
 
-cd $(dirname $0)
+Author: Jason White
+"""
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import division
+
+# Add project directory to the python path.
+from os import path
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+
+import tools.plotter as plotter
+from time import time
+import algorithms.slicetree as st
+import algorithms.fourier.fourier as fourier
+import numpy as np
+
+import tools.graph_reader as graph_reader
+from tools.paths import *
+
+# Datasets to run this experiment on.
+datasets = [
+    #(title                           , data             , graph)             ,
+    #("Twitter"                       , twitter.data     , twitter.graph    ) ,
+    #("Wikipedia (Year 2008)"         , wikipedia.data[0], wikipedia.graph  ) ,
+    ("Traffic"                        , traffic.data[0]  , traffic.graph    ) ,
+    #("Human"                         , human.data[0]    , human.graph[0]   ) ,
+    #("DBLP (Artificial Intelligence)", dblp.data[0]     , dblp.graph       ) ,
+    ("Synthetic (1000 nodes)"         , synthetic.data[2], synthetic.graph[2]),
+    ("Synthetic (10000 nodes)"        , synthetic.data[1], synthetic.graph[1]),
+    ]
+
+# Budgets to test (in bytes).
+budgets = [64, 128, 256, 512, 1024]
+
+def slicetree_time(data_file, graph_file, budget):
+    start = time()
+    partsizes = path.join("/tmp", path.splitext(path.basename(data_file))[0] + ".sizes")
+    st.precompute(data_file, graph_file, partsizes)
+    st.greedy(data_file, graph_file, partsizes, budget, radius=2, numthreads=1)
+    return time() - start
+
+def fourier_time(data_file, graph_file, budget):
+    start = time()
+    data = graph_reader.read_node_values(open(data_file, "rb"))
+    graph = graph_reader.read_graph(open(graph_file, "rb"), len(data))
+    fourier.compress(graph, data, budget, f=open("/dev/null", "wb"))
+    return time() - start
+
+if __name__ == "__main__":
+    for b in budgets:
+
+        st_times = []
+        fourier_times = []
+        xlabels = []
+        ylabel = "Time (s)"
+        legend = ["Slice Tree", "Fourier"]
+
+        for title, data, graph in datasets:
+            st_times.append(slicetree_time(data, graph, budget=b))
+            fourier_times.append(fourier_time(data, graph, budget=b))
+            xlabels.append(title)
+
+        plotter.bar_chart([st_times, fourier_times], xlabels, ylabel, legend,
+            title="Scalability (Budget %d Bytes)" % b,
+            f="results/budget%d.png" % b, color=[('#21c9f9'), ('#45de09')])
+
