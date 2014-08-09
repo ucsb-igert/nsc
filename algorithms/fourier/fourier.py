@@ -45,7 +45,7 @@ def compress_graph(csr_matrix, node_value, budget, f, compression_type=3):
 
     """
     eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
-    node_signal_value = to_signal_domain(node_value, eig_vals, eig_vecs)
+    node_signal_value = to_signal_domain(node_value, eig_vecs)
     elements = compress_method(node_signal_value, compression_type, budget)
     error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
     stderr.write('Graph was compressed with a budget of {} and error of {}.\n'.format(budget, error))
@@ -100,7 +100,7 @@ def laplacian_eigs(csr_matrix):
     stderr.write('\rEigenvector decomposition complete.\n')
     return eig_vals, eig_vecs
 
-def to_signal_domain(node_value, eig_vals, eig_vecs):
+def to_signal_domain(node_value, eig_vecs):
     """
     Transforms the node values from graph domain to signal domain.
 
@@ -108,9 +108,6 @@ def to_signal_domain(node_value, eig_vals, eig_vecs):
     ----------
     node_value: numpy array
         Values of the nodes to be compressed.
-
-    eig_vals : (M,) double or complex ndarray
-        The eigenvalues, each repeated according to its multiplicity.
 
     eig_vecs : (M, M) double or complex ndarray
         The normalized left eigenvector corresponding to the eigenvalue
@@ -121,8 +118,9 @@ def to_signal_domain(node_value, eig_vals, eig_vecs):
     node_signal_value: numpy array
         Returns the equivalent signal values.
     """
-    node_signal_value = np.zeros(len(node_value))
-    for i, eig_val in enumerate(eig_vals):
+    size = len(node_value)
+    node_signal_value = np.zeros(size)
+    for i in xrange(size):
         node_signal_value[i] = np.dot(node_value, eig_vecs[:,i])
     return node_signal_value
 
