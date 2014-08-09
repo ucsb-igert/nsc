@@ -56,6 +56,7 @@ def read_node_values(f):
     node_vals = []
     with f as data_file:
         for line in data_file:
+            # NOTE: This assumes that the node index is equal to the line number.
             node_vals.append(float(line.strip().split(',')[1]))
     return np.array(node_vals)
 
@@ -87,6 +88,3 @@ def read_ST_SSE(f):
             sse.append(s)
             sse_reduction.append(r)
     return np.array([budget,sse,sse_reduction])
-
-if __name__ == '__main__':
-    pass

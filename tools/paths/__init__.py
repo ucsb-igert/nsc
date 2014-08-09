@@ -6,3 +6,5 @@ Author: Jason White
 """
 
 __all__ = ["dblp", "human", "paths", "synthetic", "traffic", "twitter", "wikipedia"]
+
+import dblp, human, paths, synthetic, traffic, twitter, wikipedia
