@@ -118,11 +118,7 @@ def to_signal_domain(node_value, eig_vecs):
     node_signal_value: numpy array
         Returns the equivalent signal values.
     """
-    size = len(node_value)
-    node_signal_value = np.zeros(size)
-    for i in xrange(size):
-        node_signal_value[i] = np.dot(node_value, eig_vecs[:,i])
-    return node_signal_value
+    return np.dot(np.transpose(eig_vecs), node_value)
 
 def to_graph_domain(node_signal_values, eig_vecs):
     """
@@ -141,6 +137,7 @@ def to_graph_domain(node_signal_values, eig_vecs):
     node_signal_value: numpy array
         Returns the equivalent signal values.
     """
+    return np.dot(eig_vecs, node_signal_values)
     original_value = np.zeros(len(eig_vecs))
     for i, eig_vec in enumerate(eig_vecs):
         original_value[i] = np.dot(node_signal_values, eig_vec)
