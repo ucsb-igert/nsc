@@ -21,25 +21,21 @@ SRC_USERMAP=$SRC_DIR/numeric2screen
 # Links between users.
 SRC_GRAPH=$SRC_DIR/twitter_rv.net
 
-# Intermediate output
-INT_DATA=/tmp/twitter.data
-INT_GRAPH=/tmp/twitter.graph
-
 # Output *.data and *.graph files.
 OUT_DATA=../../data/Twitter/twitter.data
 OUT_GRAPH=../../data/Twitter/twitter.graph
-OUT_KEYMAP=../../data/Twitter/twitter.keymap
 
 
 # Process the tweets to create the data.
-if ! [ -f $INT_DATA ]; then
-    ./data --usermap $SRC_USERMAP $SRC_TWEETS > $INT_DATA
+if [ -f $OUT_DATA ]; then
+    echo "$OUT_DATA already exists. Skipping..."
+else
+    ./data --usermap $SRC_USERMAP $SRC_TWEETS > $OUT_DATA
 fi
 
 # Process the graph and prune dead edges.
-if ! [ -f $INT_GRAPH ]; then
-    ./graph $SRC_GRAPH | ../../tools/prune_edges.py $INT_DATA > $INT_GRAPH
+if [ -f $OUT_GRAPH ]; then
+    echo "$OUT_GRAPH already exists. Skipping..."
+else
+    ./graph $SRC_GRAPH | ../../tools/prune_edges.py $OUT_DATA > $OUT_GRAPH
 fi
-
-# Normalize node indices
-../../tools/normalize.py $INT_DATA $INT_GRAPH $OUT_DATA $OUT_GRAPH $OUT_KEYMAP
