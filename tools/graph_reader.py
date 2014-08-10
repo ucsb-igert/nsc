@@ -9,6 +9,62 @@ from scipy.sparse import *
 import scipy
 import sys
 
+def read_nodes(f):
+    """
+    Reads the values for nodes in a graph from a file.
+
+    Parameters
+    ----------
+    f: file
+        Node value file. The file format should be in node_id,value.
+        The node_if will be ignored and the values are added in order from 0 to n
+
+    Returns
+    -------
+    translation: dict
+        Translation of string node IDs to numeric sequential indices.
+
+    values: 1d numpy array
+        Array of node values.
+    """
+    translation = {}
+    values = []
+    i = 0
+    with f as data_file:
+        for line in data_file:
+            k, v = line.strip().split(',')[:2]
+            values.append(float(v))
+            translation[k] = i
+            i += 1
+    return translation, np.array(values)
+
+def read_edges(f, translation):
+    """
+    Reads a undirected, unweighted, sparse graph from a graph file.
+
+    Parameters
+    ----------
+    f: file
+        Graph file. The file format should be in from_node_id,to_node_id,wight(optional)
+        The wight parameter can be safely ignored in unweighted graphs.
+
+    translation: dict
+        Translation of string node IDs to numeric sequential indices.
+
+    Returns
+    -------
+    graph: 2d numpy array.
+        This is adjacency matrix representing the unweighted graph with value of 1.
+    """
+    rows = []
+    cols = []
+    with f as graph_file:
+        for line in f:
+            edge = [translation[s] for s in line.strip().split(',')[:2]]
+            rows.extend(edge)
+            cols.extend(edge[::-1])
+    return csr_matrix((np.ones(len(rows)),(rows, cols)), shape=(size,size), dtype=scipy.int8)
+
 def read_graph(f, size):
     """
     Reads a undirected, unweighted, sparse graph from a graph file.
