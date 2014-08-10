@@ -49,15 +49,23 @@ def read_node_values(f):
 
     Returns
     -------
+    max_node_id: int
+        The largest id of all nodes.
+
     node_vals: 1d numpy array.
         This array contains the value for each node.
     """
     sys.stderr.write('Reading node values from file "{}"...\n'.format(f.name))
+    max_node_id = 0
     node_vals = []
     with f as data_file:
         for line in data_file:
-            node_vals.append(float(line.strip().split(',')[1]))
-    return np.array(node_vals)
+            i , v = line.strip().split(',')
+            node_vals.append(float(v))
+            i = int(i)
+            if i > max_node_id:
+                max_node_id = i
+    return max_node_id, np.array(node_vals)
 
 def read_ST_SSE(f):
     """
