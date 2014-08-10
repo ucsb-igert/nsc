@@ -95,6 +95,3 @@ def read_ST_SSE(f):
             sse.append(s)
             sse_reduction.append(r)
     return np.array([budget,sse,sse_reduction])
-
-if __name__ == '__main__':
-    pass
