@@ -10,8 +10,12 @@ from sys import stderr
 from scipy.sparse import csgraph
 from scipy import linalg
 import numpy as np
+import math
 
-def compress(csr_matrix, node_value, budget, f, compression_type=3):
+
+_EXCHANGE_RATE = 12
+
+def compress(csr_matrix, node_value, num_eig, f, compression_type=3):
     """
     Compress the node values of a compressed row matrix and saves it to the disk.
 
@@ -23,7 +27,7 @@ def compress(csr_matrix, node_value, budget, f, compression_type=3):
     node_value: numpy array
         Values of the nodes to be compressed.
 
-    budget: int
+    num_eig: int
         The number of eigenvectors to use for the decompression. This value should
         be between 1 and size of the nodes.
 
@@ -46,10 +50,46 @@ def compress(csr_matrix, node_value, budget, f, compression_type=3):
     """
     eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
     node_signal_value = to_signal_domain(node_value, eig_vecs)
-    elements = compress_method(node_signal_value, compression_type, budget)
+    elements = compress_method(node_signal_value, compression_type, num_eig)
     error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
-    stderr.write('Graph was compressed with a budget of {} and error of {}.\n'.format(budget, error))
+    stderr.write('Graph was compressed with a num_eig of {} and error of {}.\n'.format(num_eig, error))
     np.savez(f, signal=node_signal_value[elements], position=elements)
+
+def sse_compress_graph(csr_matrix, node_value, num_eig, compression_type=3):
+    """
+    Returns the error (SSE) of a compressed graph with a certain num_eig.
+
+    Parameters
+    ----------
+    csr_matrix: scipy csr_matrix
+        The adjacency matrix of the graph.
+
+    node_value: numpy array
+        Values of the nodes to be compressed.
+
+    num_eig: int
+        The number of eigenvectors to use for the decompression. This value should
+        be between 1 and size of the nodes.
+
+    compression_type: int, optional
+        compression_type = 1: uses the highest x number of signal values.
+        compression_type = 2: uses the lowest x number of signal values.
+        compression_type = 2: uses x number of the extrema (absolute value) signal values.
+
+    dest: string, optional
+        The path to save the graph.
+
+    Returns
+    -------
+    error: float
+        The calculated SSE after compression.
+    """
+
+    eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
+    node_signal_value = to_signal_domain(node_value, eig_vecs)
+    elements = compress_method(node_signal_value, compression_type, num_eig)
+    error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
+    return error
 
 def decompress(csr_matrix, f):
     """
@@ -120,6 +160,12 @@ def to_signal_domain(node_value, eig_vecs):
     """
     return np.dot(np.transpose(eig_vecs), node_value)
 
+def budget_to_num_eigs(budget):
+    return int(math.floor(budget/_EXCHANGE_RATE))
+
+def num_eigs_to_budget(num_eig):
+    return num_eig*_EXCHANGE_RATE
+
 def to_graph_domain(node_signal_values, eig_vecs):
     """
     Transforms the node values from graph domain to signal domain.
@@ -138,10 +184,6 @@ def to_graph_domain(node_signal_values, eig_vecs):
         Returns the equivalent signal values.
     """
     return np.dot(eig_vecs, node_signal_values)
-    original_value = np.zeros(len(eig_vecs))
-    for i, eig_vec in enumerate(eig_vecs):
-        original_value[i] = np.dot(node_signal_values, eig_vec)
-    return original_value
 
 def SSE(original, compressed):
     """
