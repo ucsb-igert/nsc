@@ -21,7 +21,7 @@ def greedy(data, graph, partsizes, budget, radius=2, numthreads=8, **kwargs):
         "--graph"      , graph          ,
         "--partsizes"  , partsizes      ,
         "--numthreads" , str(numthreads),
-        "--budget"     , str(budget)    ,
+        "--numpart"    , str(budget)    ,
         "--maxradius"  , str(radius)    ,
         ], **kwargs)
 
@@ -33,7 +33,7 @@ def sampling(data, graph, partsizes, budget, radius=2, numthreads=8,
         "--graph"        , graph             ,
         "--partsizes"    , partsizes         ,
         "--numthreads"   , str(numthreads)   ,
-        "--budget"       , str(budget)       ,
+        "--numpart"      , str(budget)       ,
         "--maxradius"    , str(radius)       ,
         "--delta"        , str(delta)        ,
         "--rho"          , str(rho)          ,

@@ -56,7 +56,7 @@ def bar_chart(data_arrays, xlabel, ylabel, legend, title, f, width=0.25, color=[
     plt.savefig(f, format="png")
     plt.clf()
 
-def scatter_plot(data_arrays, xlabel, ylabel, labels, title, dest=''):
+def scatter_plot(data_arrays, xlabel, ylabel, labels, title, f):
     """
     Plots a scatter chart.
 
@@ -95,10 +95,10 @@ def scatter_plot(data_arrays, xlabel, ylabel, labels, title, dest=''):
     plt.legend(plots, labels, loc=2)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.savefig(os.path.join(dest, title + '.png'))
+    plt.savefig(f, format="png")
     plt.clf()
 
-def line_plot(data_arrays, xlabel, ylabel, labels, title, dest=''):
+def line_plot(data_arrays, xlabel, ylabel, labels, title, f):
     """
     Plots a scatter chart.
 
@@ -137,7 +137,7 @@ def line_plot(data_arrays, xlabel, ylabel, labels, title, dest=''):
     plt.legend(plots, labels, loc=2)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.savefig(os.path.join(dest, title + '.png'))
+    plt.savefig(f, format="png")
     plt.clf()
 
 def Test ():
