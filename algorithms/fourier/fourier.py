@@ -161,10 +161,34 @@ def to_signal_domain(node_value, eig_vecs):
     return np.dot(np.transpose(eig_vecs), node_value)
 
 def budget_to_num_eigs(budget):
+    """
+    Converts budget (bytes) to the number of eigenvectors used to decompress the graph.
+
+    Parameters
+    ----------
+    budget: int
+        Number of bites after the compression.
+    Returns
+    -------
+    num_eigs: int
+        Returns number of eigenvectors used to decompress the graph.
+    """
     return int(math.floor(budget/_EXCHANGE_RATE))
 
-def num_eigs_to_budget(num_eig):
-    return num_eig*_EXCHANGE_RATE
+def num_eigs_to_budget(num_eigs):
+    """
+    Converts the number of eigenvectors used to decompress the graph to budget (bytes).
+
+    Parameters
+    ----------
+    num_eigs: int
+        Returns number of eigenvectors used to decompress the graph.
+    Returns
+    -------
+    budget: int
+        Number of bites after the compression.
+    """
+    return num_eigs*_EXCHANGE_RATE
 
 def to_graph_domain(node_signal_values, eig_vecs):
     """
