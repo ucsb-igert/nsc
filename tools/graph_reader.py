@@ -58,6 +58,7 @@ def read_edges(f, translation):
     """
     rows = []
     cols = []
+    size = len(translation)
     with f as graph_file:
         for line in f:
             edge = [translation[s] for s in line.strip().split(',')[:2]]

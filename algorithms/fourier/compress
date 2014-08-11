@@ -27,8 +27,8 @@ parser.add_argument("--budget", type=int, default=0,
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    data = graph_reader.read_node_values(args.data)
-    graph = graph_reader.read_graph(args.graph, len(data))
+    translation, data = graph_reader.read_nodes(args.data)
+    graph = graph_reader.read_edges(args.graph, translation)
 
     if args.budget == 0:
         args.budget = len(data)/2
