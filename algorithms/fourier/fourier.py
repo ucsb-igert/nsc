@@ -37,7 +37,7 @@ def compress(csr_matrix, node_value, num_eig, f, compression_type=3):
     compression_type: int, optional
         compression_type = 1: uses the highest x number of signal values.
         compression_type = 2: uses the lowest x number of signal values.
-        compression_type = 2: uses x number of the extrema (absolute value) signal values.
+        compression_type = 3: uses x number of the extrema (absolute value) signal values.
 
     dest: string, optional
         The path to save the graph.
@@ -240,7 +240,7 @@ def compress_method(node_signal_values, type, count):
     type: int, optional
         type = 1: uses the highest x number of signal values.
         type = 2: uses the lowest x number of signal values.
-        type = 2: uses x number of the extrema (absolute value) signal values.
+        type = 3: uses x number of the extrema (absolute value) signal values.
 
     Returns
     -------
@@ -254,12 +254,14 @@ def compress_method(node_signal_values, type, count):
     """
     if count > len(node_signal_values) or count < 1:
         raise Exception('{} is not a valid count.'.format(count))
-    elements = np.argsort(node_signal_values)
     if type == 1:
+        elements = np.argsort(node_signal_values)
         elements = elements[:count]
     elif type == 2:
-        elements = elements[::-1]
+        elements = np.argsort(node_signal_values)[::-1]
         elements = elements[:count]
     elif type == 3:
-        elements = np.append(elements[:count/2], elements[-count/2:])
+        elements = np.argsort(np.absolute(node_signal_values))[::-1]
+        elements = elements[:count]
     return elements
+
