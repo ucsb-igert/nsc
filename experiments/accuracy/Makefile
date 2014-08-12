@@ -24,10 +24,10 @@ smooth.slicetree.csv: ${SMOOTH_DATA} ${GRAPH}
 smooth.fourier.csv: ${SMOOTH_DATA} ${GRAPH}
 	./sse_fourier $^ 1> $@
 
-rough.slicetree.csv: ${SMOOTH_DATA} ${GRAPH}
+rough.slicetree.csv: ${ROUGH_DATA} ${GRAPH}
 	./sse_slicetree $^ 1> $@
 
-rough.fourier.csv: ${SMOOTH_DATA} ${GRAPH}
+rough.fourier.csv: ${ROUGH_DATA} ${GRAPH}
 	./sse_fourier $^ 1> $@
 
 smooth.plot.png: smooth.slicetree.csv smooth.fourier.csv

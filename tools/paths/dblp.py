@@ -1,6 +1,8 @@
 from .paths import data_dir
 from os.path import join
 from glob import glob
+import re
 
-data = glob(join(data_dir, "DBLP", "*.data"))
-graph = join(data_dir, "DBLP/dblp.graph")
+dir = join(data_dir, "DBLP")
+data = glob(join(dir, "*.data"))
+graph = join(dir, "dblp.graph")
