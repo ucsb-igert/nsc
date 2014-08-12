@@ -2,7 +2,12 @@
 
 cd $(dirname $0)
 
-./time_fourier 1> results/time_fourier.csv
-./time_slicetree 1> results/time_slicetree.csv
+if ! [ -f results/time_fourier.csv ]; then
+    ./time_fourier 1> results/time_fourier.csv
+fi
 
-./plot resluts/time_slicetree.csv results/time_fourier.csv results/plot.png
+if ! [ -f results/time_slicetree.csv ]; then
+    ./time_slicetree 1> results/time_slicetree.csv
+fi
+
+./plot results/time_slicetree.csv results/time_fourier.csv results/plot.png

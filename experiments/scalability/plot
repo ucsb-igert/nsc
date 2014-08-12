@@ -10,9 +10,7 @@ from os import path
 import sys
 sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
 
-
 # Imports
-import numpy as np
 import tools.plotter as plotter
 
 def read_values(f):
@@ -21,7 +19,7 @@ def read_values(f):
     with f as error_file:
         for line in error_file:
             b, t = line.strip().split(',')
-            nodes.append(int(b)
+            nodes.append(int(b))
             time.append(float(t))
     return [nodes, time]
 
