@@ -1,0 +1,75 @@
+#!/bin/env python2.7
+"""
+Computes the SSE for several datasets each of which have the same number of
+nodes.
+
+Author: Jason White
+"""
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+# Add project directory to the python path.
+from os import path, pipe
+import os
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+
+import algorithms.fourier.fourier as fourier
+
+import tools.graph_reader as graph_reader
+import tools.reduce as r
+
+def parse_arguments():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Computes the SSE for a fixed budget on various datasets."
+        )
+    parser.add_argument("dblp_data", help="DBLP data input file.", type=argparse.FileType("rb"))
+    parser.add_argument("dblp_graph", help="DBLP graph input file.", type=argparse.FileType("rb"))
+
+    parser.add_argument("human_data",  help="Human data input file.", type=argparse.FileType("rb"))
+    parser.add_argument("human_graph", help="Human graph input file.", type=argparse.FileType("rb"))
+
+    parser.add_argument("synthetic_data",  help="Synthetic data input file.", type=argparse.FileType("rb"))
+    parser.add_argument("synthetic_graph", help="Synthetic graph input file.", type=argparse.FileType("rb"))
+
+    parser.add_argument("traffic_data",  help="Traffic data input file.", type=argparse.FileType("rb"))
+    parser.add_argument("traffic_graph", help="Traffic graph input file.", type=argparse.FileType("rb"))
+
+    parser.add_argument("twitter_data",  help="Twitter data input file.", type=argparse.FileType("rb"))
+    parser.add_argument("twitter_graph", help="Twitter graph input file.", type=argparse.FileType("rb"))
+
+    parser.add_argument("wiki_data",  help="Wikipedia data input file.", type=argparse.FileType("rb"))
+    parser.add_argument("wiki_graph", help="Wikipedia graph input file.", type=argparse.FileType("rb"))
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+
+    args = parse_arguments()
+
+    datasets = [
+        (args.dblp_data, args.dblp_graph),
+        (args.human_data, args.human_graph),
+        (args.synthetic_data, args.synthetic_graph),
+        (args.traffic_data, args.traffic_graph),
+        (args.twitter_data, args.twitter_graph),
+        (args.wiki_data, args.wiki_graph),
+    ]
+
+    # Number of eigenvectors to use for the compressed state
+    eigvecs = 50
+
+    for d in datasets:
+        # Read the graph
+        translation, data = graph_reader.read_nodes(d[0])
+        graph = graph_reader.read_edges(d[1], translation)
+
+        num_nodes = len(data)
+
+        # Compute the SSE
+        sse = fourier.sse_compress_graph(graph, data, num_eig=eigvecs)
+        budget = fourier.num_eigs_to_budget(eigvecs)
+        print("%d,%d" % (budget, sse))
+        sys.stdout.flush()

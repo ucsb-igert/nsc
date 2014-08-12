@@ -1,0 +1,81 @@
+#!/bin/env python2.7
+"""
+Runs the accuracy experiment.
+
+Author: Jason White
+"""
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+# Add project directory to the python path.
+from os import path, pipe
+import os
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+
+import tools.plotter as plotter
+from time import time
+import algorithms.slicetree as st
+import subprocess
+
+import tools.graph_reader as graph_reader
+import tools.reduce as r
+
+def slice_tree_sse(data_file, graph_file, partitions):
+    # Pre-compute partition sizes
+    partsizes = path.join("/tmp", path.splitext(path.basename(data_file))[0] + ".sizes")
+    subprocess.check_call(st.precompute(data_file, graph_file, partsizes))
+
+    args = st.greedy(data_file, graph_file, partsizes, numpart=partitions, radius=2, numthreads=16)
+    output = subprocess.check_output(args)
+    results = st.parse_output(output)
+
+    # Delete pre-computed partition sizes
+    os.remove(partsizes)
+
+    return results["budget"], results["sse"]
+
+def parse_arguments():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Computes the SSE for a fixed budget on various datasets."
+        )
+    parser.add_argument("dblp_data", help="DBLP data input file.")
+    parser.add_argument("dblp_graph", help="DBLP graph input file.")
+
+    parser.add_argument("human_data",  help="Human data input file.")
+    parser.add_argument("human_graph", help="Human graph input file.")
+
+    parser.add_argument("synthetic_data",  help="Synthetic data input file.")
+    parser.add_argument("synthetic_graph", help="Synthetic graph input file.")
+
+    parser.add_argument("traffic_data",  help="Traffic data input file.")
+    parser.add_argument("traffic_graph", help="Traffic graph input file.")
+
+    parser.add_argument("twitter_data",  help="Twitter data input file.")
+    parser.add_argument("twitter_graph", help="Twitter graph input file.")
+
+    parser.add_argument("wiki_data",  help="Wikipedia data input file.")
+    parser.add_argument("wiki_graph", help="Wikipedia graph input file.")
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+
+    args = parse_arguments()
+
+    datasets = [
+        (args.dblp_data, args.dblp_graph),
+        (args.human_data, args.human_graph),
+        (args.synthetic_data, args.synthetic_graph),
+        (args.traffic_data, args.traffic_graph),
+        (args.twitter_data, args.twitter_graph),
+        (args.wiki_data, args.wiki_graph),
+    ]
+
+    # Number of partitions to use for the compressed state
+    partitions = 50
+
+    for d in datasets:
+        print("%d,%d" % slice_tree_sse(d[0], d[1], partitions))
+        sys.stdout.flush()
