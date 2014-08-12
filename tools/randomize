@@ -5,17 +5,28 @@ node values in the range [0 .. 100,000) to standard output.
 
 Author: Jason White
 """
-import sys, random
+import sys
+from random import shuffle
 
 if __name__ == "__main__":
     try:
         finput = sys.stdin
         foutput = sys.stdout
 
+        # Read in all values and shuffle
+        ids = []
+        values = []
+
         for line in finput:
-            values = line.strip().split(',')
-            f = random.random() * 100000
-            foutput.write("%s,%f\n" % (values[0], f))
+            vals = line.strip().split(',')
+            ids.append(vals[0])
+            values.append(vals[1])
+
+        shuffle(values)
+
+        # Write back
+        for i,v in enumerate(values):
+            foutput.write("%s,%s\n" % (ids[i], v))
 
     except KeyboardInterrupt:
         pass
