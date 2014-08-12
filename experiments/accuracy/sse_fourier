@@ -1,0 +1,51 @@
+#!/bin/env python2.7
+"""
+Runs the accuracy experiment.
+
+Author: Jason White
+"""
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+# Add project directory to the python path.
+from os import path, pipe
+import os
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+
+import algorithms.fourier.fourier as fourier
+import subprocess
+
+import tools.graph_reader as graph_reader
+import tools.reduce as r
+
+def parse_arguments():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Computes the SSE for a range of budgets on the given dataset."
+        )
+    parser.add_argument("data", type=argparse.FileType("rb"),
+        help="Data input file.")
+    parser.add_argument("graph", type=argparse.FileType("rb"),
+        help="Graph input file.")
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+
+    args = parse_arguments()
+
+    fdata, fgraph = args.data, args.graph
+
+    # Read the graph
+    translation, data = graph_reader.read_nodes(fdata)
+    graph = graph_reader.read_edges(fgraph, translation)
+
+    num_nodes = len(data)
+
+    for i in range(1, num_nodes, 10):
+        sse = fourier.sse_compress_graph(graph, data, num_eig=i)
+        budget = fourier.num_eigs_to_budget(i)
+        print("%d,%d" % (budget, sse))
+        sys.stdout.flush()
