@@ -1,62 +1,62 @@
-#!/bin/sh
+#!/bin/env python2.7
+"""
+Runs the accuracy experiment.
 
-# Description:
-# Calculates the Sum of Squared Errors (SSE) and SSE reduction for each possible
-# partition count on the given network.
+Author: Jason White
+"""
+from __future__ import print_function, unicode_literals, absolute_import, division
 
-if [ "$#" -ne 2 ] || ! [ -f $1 ] || ! [ -f $2 ]; then
-    echo "Usage: $0 <data_file> <graph_file>"
-    exit 1
-fi
+# Add project directory to the python path.
+from os import path, pipe
+import os
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
 
-# Number of threads to use.
-NUM_THREADS=48
+import tools.plotter as plotter
+from time import time
+import algorithms.slicetree as st
+import algorithms.fourier.fourier as fourier
+import subprocess
 
-# Data file
-DATA=$1
+import tools.graph_reader as graph_reader
+import tools.paths.synthetic as dataset
+import tools.reduce as r
 
-# Graph file
-GRAPH=$2
+def slice_tree_sse(data_file, graph_file, slices):
+    args = st.greedy(data_file, graph_file, partsizes, numpart=slices, radius=2, numthreads=1)
+    output = subprocess.check_output(args)
+    results = st.parse_output(output)
+    return results["budget"], results["sse"]
 
-# Name of the network
-NETWORK=$(basename $DATA .data)
+def parse_arguments():
+    import argparse
 
-# Path to graph compression program
-COMPRESS=$(readlink -m "$(dirname $0)/../../algorithms/slice-tree/graph_compression")
+    parser = argparse.ArgumentParser(
+        description="Computes the SSE for a range of budgets on the given dataset."
+        )
+    parser.add_argument("data", help="Data input file.")
+    parser.add_argument("graph", help="Graph input file.")
 
-if ! [ -f $COMPRESS ]; then
-    echo "Error: Graph compression executable '$COMPRESS' does not exist."
-    echo "       Be sure the program has been compiled."
-    exit 1
-fi
+    return parser.parse_args()
 
-SIZES=/tmp/$NETWORK.sizes
+if __name__ == "__main__":
 
-# Pre-compute partition sizes if necessary
-if ! [ -f $SIZES ]; then
-    $COMPRESS --graph $GRAPH --values $DATA \
-        --partsizes $SIZES --numthreads $NUM_THREADS
+    #args = parse_arguments()
+    #data_file, graph_file = args.data, args.graph
 
-    if ! [ $? -eq 0 ]; then
-        echo "Error: Failed to pre-compute partition sizes."
-    fi
-fi
+    data_file, graph_file = dataset.reductions[1000]
 
-# Find the number of nodes in the network
-NODE_COUNT=$(wc -l < $DATA)
+    # Pre-compute partition sizes
+    partsizes = path.join("/tmp", path.splitext(path.basename(data_file))[0] + ".sizes")
+    subprocess.check_call(st.precompute(data_file, graph_file, partsizes))
 
-for ((i=2; i <= $NODE_COUNT; ++i)); do
-    OUTPUT=$($COMPRESS --compression ST \
-        --values $DATA --graph $GRAPH --partsizes $SIZES \
-        --maxradius 2 --numpart $i --numthreads $NUM_THREADS \
-        | awk '/^sse = / {print $3;} /^sse_reduction = / {print $3;}')
+    # Find the number of nodes in the graph
+    with open(data_file, "r") as data:
+        num_nodes = graph_reader.count_nodes(data)
 
-    SSE=$(echo $OUTPUT | awk '{print $1;}')
-    #SSE_REDUCTION=$(echo $OUTPUT | awk '{print $2;}')
+    for i in range(2, num_nodes, 10):
+        print("%d,%d" % slice_tree_sse(data_file, graph_file, i))
+        sys.stdout.flush()
 
-    #echo "$i,$SSE,$SSE_REDUCTION"
-    echo "$(echo "$i 16 * p" | dc),$SSE"
-done
-
-# Delete pre-computed partition sizes
-rm $SIZES
+    # Delete pre-computed partition sizes
+    os.remove(partsizes)

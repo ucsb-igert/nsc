@@ -2,4 +2,11 @@
 
 cd $(dirname $0)
 
-./st_generate_sse | 
+# Generate SSEs with Slice Tree
+./sse_slicetree 1> results/sse_slicetree.csv
+
+# Generate SSEs with Fourier
+./sse_fourier 1> results/sse_fourier.csv
+
+# Plot it.
+./plot results/sse_slicetree.csv results/sse_fourier.csv results/plot.png
