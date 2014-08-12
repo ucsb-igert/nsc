@@ -9,6 +9,16 @@ from scipy.sparse import *
 import scipy
 import sys
 
+def count_nodes(f):
+    """
+    Counts the number of nodes in a file. Each line corresponds to a node. Thus,
+    the number of nodes is equal to the number of lines.
+    """
+    i = 0
+    for line in f:
+        i += 1
+    return i
+
 def read_nodes(f):
     """
     Reads the values for nodes in a graph from a file.
