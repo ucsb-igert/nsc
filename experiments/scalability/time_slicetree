@@ -1,0 +1,64 @@
+#!/bin/env python2.7
+"""
+Runs the scalability experiment.
+
+Author: Jason White
+"""
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+# Add project directory to the python path.
+import sys
+from os import path, devnull
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+
+import tools.plotter as plotter
+from time import time
+import algorithms.slicetree as st
+import subprocess
+
+import tools.graph_reader as graph_reader
+import tools.paths.synthetic as dataset
+import tools.reduce as r
+
+def slicetree_time(data_file, graph_file, budget):
+    null = open(devnull, "wb")
+    start = time()
+    partsizes = path.join("/tmp", path.splitext(path.basename(data_file))[0] + ".sizes")
+    args = st.precompute(data_file, graph_file, partsizes)
+    subprocess.check_call(args, stdout=null)
+    args = st.greedy(data_file, graph_file, partsizes, budget, radius=2, numthreads=1)
+    subprocess.check_call(args, stdout=null)
+    return time() - start
+
+if __name__ == "__main__":
+
+    times = []
+
+    # Read in the network
+    with open(dataset.data, "r") as fdata:
+        data = r.read_data(fdata)
+
+    with open(dataset.graph, "r") as fgraph:
+        graph = r.read_graph(fgraph)
+
+    # Budget (# of partitions or eigenvectors)
+    b = 50
+
+    data_file = "/tmp/time_slicetree.data"
+    graph_file = "/tmp/time_slicetree.graph"
+
+    # Continually reduce the graph to these numbers of nodes
+    for n in range(100, 2501, 50):
+        # Reduce the graph; save it to a temporary location
+        with open(data_file, "w") as fdataout, \
+             open(graph_file, "w") as fgraphout:
+            print("Reducing to %d nodes..." % n, file=sys.stderr)
+            r.reduce_graph(data, graph, n, fdataout, fgraphout)
+
+        t = slicetree_time(data_file, graph_file, budget=b)
+
+        print("%d,%f" % (n, t))
+        sys.stdout.flush()
+
+    os.remove(data_file)
+    os.remove(graph_file)
