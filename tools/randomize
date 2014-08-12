@@ -1,0 +1,21 @@
+#!/bin/env python2.7
+"""
+Takes from standard input a list of node values and outputs a list of randomized
+node values in the range [0 .. 100,000) to standard output.
+
+Author: Jason White
+"""
+import sys, random
+
+if __name__ == "__main__":
+    try:
+        finput = sys.stdin
+        foutput = sys.stdout
+
+        for line in finput:
+            values = line.strip().split(',')
+            f = random.random() * 100000
+            foutput.write("%s,%f\n" % (values[0], f))
+
+    except KeyboardInterrupt:
+        pass
