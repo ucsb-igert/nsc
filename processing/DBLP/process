@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Reduces the DBLP datasets to 1000 nodes each.
+
+cd $(dirname $0)
+
+GRAPH=../../data/DBLP/dblp.graph
+
+reduce() {
+    DATA=../../data/DBLP/dblp_$1.data
+    DATA_REDUCED=../../data/DBLP/reduced.$2.dblp_$1.data
+    GRAPH_REDUCED=../../data/DBLP/reduced.$2.dblp_$1.graph
+
+    if ! [ -f $DATA_REDUCED ]; then
+        echo "Reducing '$1' to $2 nodes..."
+        ../../tools/reduce.py $DATA $GRAPH $DATA_REDUCED $GRAPH_REDUCED --count $2
+    fi
+}
+
+DATASETS="ai alg arch bio dm edu graph hci net os para pl se sec"
+
+for dataset in $DATASETS; do
+    reduce $dataset 1000
+done
