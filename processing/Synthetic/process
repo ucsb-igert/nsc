@@ -1,0 +1,36 @@
+#!/bin/env python2.7
+
+"""
+Generates the synthetic datasets.
+
+Author: Jason White
+"""
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+# Add project directory to the python path.
+from os import path
+import sys
+sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
+
+from tools.paths import synthetic
+import tools.graph_generator as graph_generator
+
+if __name__ == "__main__":
+    g = graph_generator.Graph(
+            num_vertices=10000,
+            num_edges=4,
+            num_partitions=32,
+            radius=2,
+            max_average=0,
+            sse=200000,
+            sse_reduction=100000
+            )
+
+    name = path.join(synthetic.dir, "synthetic")
+
+    g.set_graph()
+    g.write_graph(name + ".graph")
+    g.set_partitions()
+    g.set_values()
+    g.write_values(name + ".data")
+    g.write_statistics(name + ".stats")

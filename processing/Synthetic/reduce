@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Reduces the DBLP datasets to 1000 nodes each.
+
+cd $(dirname $0)
+
+DATA=../../data/Synthetic/synthetic.data
+GRAPH=../../data/Synthetic/synthetic.graph
+
+mkdir -p ../../data/Synthetic/reduced
+
+COUNT=1000
+
+DATA_REDUCED=../../data/Synthetic/reduced/$COUNT.synthetic.data
+GRAPH_REDUCED=../../data/Synthetic/reduced/$COUNT.synthetic.graph
+
+if ! [ -f $DATA_REDUCED ] || ! [ -f $GRAPH_REDUCED ]; then
+    echo "Reducing 'synthetic' to $COUNT nodes..."
+    ../../tools/reduce.py $DATA $GRAPH $DATA_REDUCED $GRAPH_REDUCED --count $COUNT
+fi

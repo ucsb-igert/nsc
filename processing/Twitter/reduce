@@ -1,27 +1,20 @@
 #!/bin/sh
 
-# Reduces the Twitter dataset to more manageable sizes.
-#
-# Usage:
-#     $ ./reduce
-# or, because this may take a long time, use
-#     $ ./reduce &> progress &
+# Reduces the DBLP datasets to 1000 nodes each.
 
 cd $(dirname $0)
 
-BASE=../../data/Twitter
+DATA=../../data/Twitter/twitter.data
+GRAPH=../../data/Twitter/twitter.graph
 
-DATA=$BASE/twitter.data
-GRAPH=$BASE/twitter.graph
+mkdir -p ../../data/Twitter/reduced
 
-REDUCED_DATA=$BASE/reduced/twitter_%d.data
-REDUCED_GRAPH=$BASE/reduced/twitter_%d.graph
+COUNT=1000
 
-# Graph reduction tool
-REDUCE=../../tools/reduce_many
+DATA_REDUCED=../../data/Twitter/reduced/$COUNT.twitter.data
+GRAPH_REDUCED=../../data/Twitter/reduced/$COUNT.twitter.graph
 
-mkdir -p $REDUCED_DIR
-
-$REDUCE $DATA $GRAPH $REDUCED_DATA $REDUCED_GRAPH \
-    -n 50 100 250 500 1000 10000 50000 100000
-
+if ! [ -f $DATA_REDUCED ] || ! [ -f $GRAPH_REDUCED ]; then
+    echo "Reducing 'twitter' to $COUNT nodes..."
+    ../../tools/reduce.py $DATA $GRAPH $DATA_REDUCED $GRAPH_REDUCED --count $COUNT
+fi

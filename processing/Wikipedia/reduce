@@ -1,30 +1,24 @@
 #!/bin/sh
 
-# Reduces the Wikipedia dataset to more manageable sizes.
-#
-# Usage:
-#     $ ./reduce
-# or, because this may take a long time, use
-#     $ ./reduce &> progress &
+# Reduces the DBLP datasets to 1000 nodes each.
 
 cd $(dirname $0)
 
-BASE=../../data/Wikipedia
+GRAPH=../../data/Wikipedia/wiki-links.graph
 
-REDUCED_DIR=$BASE/reduced
+mkdir -p ../../data/Wikipedia/reduced
 
-GRAPH=$BASE/wiki-links.graph
-
-# Graph reduction tool
-REDUCE=../../tools/reduce_many
-
-mkdir -p $REDUCED_DIR
+COUNT=1000
 
 YEARS='2008 2009 2010 2011'
 
 for year in $YEARS; do
-    echo "Reducing Wikipedia page views for $year..."
-    $REDUCE $BASE/wiki-views-$year-day.data $GRAPH \
-        $REDUCED_DIR/wikipedia-$year.%d.data $REDUCED_DIR/wikipedia-$year.%d.graph \
-        -n 50 100 250 500 1000 10000 50000 100000
+    DATA=../../data/Wikipedia/wiki-views-$year-day.data
+    DATA_REDUCED=../../data/Wikipedia/reduced/$COUNT.wiki-views-$year-day.data
+    GRAPH_REDUCED=../../data/Wikipedia/reduced/$COUNT.wiki-views-$year-day.graph
+
+    if ! [ -f $DATA_REDUCED ] || ! [ -f $GRAPH_REDUCED ]; then
+        echo "Reducing 'Wikipedia $year' to $COUNT nodes..."
+        ../../tools/reduce.py $DATA $GRAPH $DATA_REDUCED $GRAPH_REDUCED --count $COUNT
+    fi
 done

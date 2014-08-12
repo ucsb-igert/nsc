@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Reduces the Traffic datasets to 1000 nodes each.
+
+cd $(dirname $0)
+
+GRAPH=../../data/Traffic/traffic.graph
+
+mkdir -p ../../data/Traffic/reduced
+
+# Number of traffic datasets
+NUM=8639
+
+reduce() {
+    DATA=../../data/Traffic/traffic_$1.data
+    DATA_REDUCED=../../data/Traffic/reduced/$2.traffic_$1.data
+    GRAPH_REDUCED=../../data/Traffic/reduced/$2.traffic_$1.graph
+
+    if ! [ -f $DATA_REDUCED ]; then
+        echo "Reducing '$1' to $2 nodes..."
+        ../../tools/reduce.py $DATA $GRAPH $DATA_REDUCED $GRAPH_REDUCED --count $2
+    fi
+}
+
+for ((i=0; i <= $NUM; i++)); do
+    reduce $i 1000
+done

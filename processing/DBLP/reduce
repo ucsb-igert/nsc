@@ -6,10 +6,12 @@ cd $(dirname $0)
 
 GRAPH=../../data/DBLP/dblp.graph
 
+mkdir -p ../../data/DBLP/reduced
+
 reduce() {
     DATA=../../data/DBLP/dblp_$1.data
-    DATA_REDUCED=../../data/DBLP/reduced.$2.dblp_$1.data
-    GRAPH_REDUCED=../../data/DBLP/reduced.$2.dblp_$1.graph
+    DATA_REDUCED=../../data/DBLP/reduced/$2.dblp_$1.data
+    GRAPH_REDUCED=../../data/DBLP/reduced/$2.dblp_$1.graph
 
     if ! [ -f $DATA_REDUCED ]; then
         echo "Reducing '$1' to $2 nodes..."
