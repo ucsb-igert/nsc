@@ -2,11 +2,24 @@
 
 # Usage: ./process_all
 
+# DBLP dataset
+./DBLP/reduce
+
+# Human dataset
 ./Human/process
 ./Human/reduce
 
-./Wikipedia/process
-./Wikipedia/reduce
+# Synthetic dataset
+./Synthetic/process
+./Synthetic/reduce
 
+# Traffic dataset
+./Traffic/reduce
+
+# Twitter dataset
 ./Twitter/process
 ./Twitter/reduce
+
+# Wikipedia dataset
+./Wikipedia/process
+./Wikipedia/reduce
