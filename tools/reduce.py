@@ -4,10 +4,7 @@ Reduces a graph to the number of specified nodes.
 
 Author: Jason White
 """
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import print_function, unicode_literals, absolute_import, division
 
 from sys import stderr
 import argparse
@@ -17,8 +14,8 @@ def read_data(f):
     data = {}
 
     for line in f:
-        values = line.strip().split(",", 1)
-        data[int(values[0])] = float(values[1])
+        values = line.strip().split(",")
+        data[values[0]] = values[1]
 
     return data
 
@@ -26,8 +23,8 @@ def read_graph(f):
     graph = {}
 
     for line in f:
-        values = line.strip().split(",", 2)
-        a, b = int(values[0]), int(values[1])
+        values = line.strip().split(",")
+        a, b = values[0], values[1]
 
         try:
             graph[a].append(b)
@@ -88,12 +85,12 @@ def reduce_graph(data, graph, count, fdataout, fgraphout):
 
     # Write out the chosen nodes and the links between them.
     for node in taken:
-        fdataout.write("%d,%f\n" % (node, data[node]))
+        fdataout.write("%s,%s\n" % (node, data[node]))
 
         try:
             for child in graph[node]:
                 if child in taken:
-                    fgraphout.write("%d,%d\n" % (node, child))
+                    fgraphout.write("%s,%s\n" % (node, child))
         except KeyError:
             pass
 
