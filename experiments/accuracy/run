@@ -2,11 +2,14 @@
 
 cd $(dirname $0)
 
+DATA=../../data/Traffic/traffic_0.data
+GRAPH=../../data/Traffic/traffic.graph
+
 # Generate SSEs with Slice Tree
-./sse_slicetree 1> results/sse_slicetree.csv
+./sse_slicetree $DATA $GRAPH 1> results/sse_slicetree.csv
 
 # Generate SSEs with Fourier
-./sse_fourier 1> results/sse_fourier.csv
+./sse_fourier $DATA $GRAPH 1> results/sse_fourier.csv
 
 # Plot it.
 ./plot results/sse_slicetree.csv results/sse_fourier.csv results/plot.png

@@ -1,7 +1,9 @@
 # Generates the data and plots for this experiment.
 #
-# Usage: 
+# Usage:
 #     make -j4
+#
+# This may take quite a while to complete.
 #
 # Author: Jason White
 .PHONY: all clean

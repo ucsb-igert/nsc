@@ -19,11 +19,10 @@ import algorithms.fourier.fourier as fourier
 import subprocess
 
 import tools.graph_reader as graph_reader
-import tools.paths.synthetic as dataset
 import tools.reduce as r
 
 def slice_tree_sse(data_file, graph_file, slices):
-    args = st.greedy(data_file, graph_file, partsizes, numpart=slices, radius=2, numthreads=1)
+    args = st.greedy(data_file, graph_file, partsizes, numpart=slices, radius=2, numthreads=16)
     output = subprocess.check_output(args)
     results = st.parse_output(output)
     return results["budget"], results["sse"]
@@ -41,18 +40,17 @@ def parse_arguments():
 
 if __name__ == "__main__":
 
-    #args = parse_arguments()
-    #data_file, graph_file = args.data, args.graph
+    args = parse_arguments()
 
-    data_file, graph_file = dataset.reductions[1000]
+    data_file, graph_file = args.data, args.graph
 
     # Pre-compute partition sizes
     partsizes = path.join("/tmp", path.splitext(path.basename(data_file))[0] + ".sizes")
     subprocess.check_call(st.precompute(data_file, graph_file, partsizes))
 
     # Find the number of nodes in the graph
-    with open(data_file, "r") as data:
-        num_nodes = graph_reader.count_nodes(data)
+    with open(data_file, "r") as fdata:
+        num_nodes = graph_reader.count_nodes(fdata)
 
     for i in range(2, num_nodes, 10):
         print("%d,%d" % slice_tree_sse(data_file, graph_file, i))
