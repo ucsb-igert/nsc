@@ -1,3 +1,5 @@
 */tmp/
 */results/
 *.sizes
+*.csv
+*.png
