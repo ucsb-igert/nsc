@@ -16,9 +16,9 @@ network. These algorithms include:
 
 ## Dependencies
 
- * Python 2.7
+ * [Python 2.7](https://www.python.org/download/releases/2.7/)
  * [matplotlib](http://matplotlib.org/)
- * [numpy](http://matplotlib.org/)
+ * [numpy](http://www.numpy.org/)
  * [scipy](http://www.scipy.org/)
  * [networkx](https://networkx.github.io/)
  * [Graphviz](http://www.graphviz.org/)
