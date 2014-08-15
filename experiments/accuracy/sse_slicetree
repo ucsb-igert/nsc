@@ -52,9 +52,11 @@ if __name__ == "__main__":
     with open(data_file, "r") as fdata:
         num_nodes = graph_reader.count_nodes(fdata)
 
-    for i in range(2, num_nodes, 10):
-        print("%d,%d" % slice_tree_sse(data_file, graph_file, i))
+    for i in range(2, num_nodes, 100):
+        budget, sse = slice_tree_sse(data_file, graph_file, i)
+        print("%d,%d" % (budget, sse))
         sys.stdout.flush()
+        if sse == 0: break
 
     # Delete pre-computed partition sizes
     os.remove(partsizes)
