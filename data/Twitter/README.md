@@ -45,29 +45,3 @@ This file contains the links between users that "follow" each other. For
 example, `12\t237` means that the user with ID `12` follows the user with id
 `237`. The mapping between user IDs and user names is given in the file
 `numeric2screen`.
-
-## Processing
-
-The above raw files are processed using the scripts `data` and `graph`.
-
-### Data
-
-The `data` script generates a list of users and their average response time to
-retweet. For example, to generate the response times for all users in 2009, the
-following command can be used:
-
-```bash
-$ ./data --usermap raw/numeric2screen raw/tweets2009-*.txt > twitter.data
-```
-
-This can take a very long time and use a lot of memory, progress of the
-processing is written to `stderr`. On a machine with a 2.6 GHz processor, it
-took ~10 hours and ~200 GiB of memory.
-
-### Graph
-
-The `graph` script simply reformats `twitter_rv.net` (the mapping of followers):
-
-```bash
-$ ./graph < twitter_rv.net > twitter.graph
-```

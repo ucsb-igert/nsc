@@ -19,7 +19,11 @@ The following is a list of each dataset and their corresponding description.
  * **Twitter**: Unprocessed dataset. Contains a list of tweets for several
    months from the year 2009.
 
- * **Wikipedia**: **TODO**
+ * **Wikipedia**: Unprocessed dataset. Contains the number of views/edits for
+   Wikipedia pages between 2008 and 2011.
+
+For more details, see each `README.md` file under the corresponding directory
+for each dataset.
 
 ## Network Format
 

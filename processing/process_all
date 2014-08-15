@@ -17,7 +17,7 @@
 ./Traffic/reduce
 
 # Twitter dataset
-./Twitter/process
+make -f ./Twitter/Makefile
 ./Twitter/reduce
 
 # Wikipedia dataset

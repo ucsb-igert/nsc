@@ -6,6 +6,8 @@
 #     ./process
 # or, because this is a long running task
 #     ./process &> progress &
+#
+# TODO: Convert this to a Makefile
 
 cd $(dirname $0)
 
@@ -38,8 +40,6 @@ done
 # Compile the data processing program
 echo "Compiling 'data.cpp'..."
 g++ -O3 data.cpp -o data
-
-exit
 
 # Find the number of pages
 PAGE_COUNT=$(wc -l < $SRC_PAGE_MAP)
