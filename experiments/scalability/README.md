@@ -5,5 +5,5 @@ dataset to compress to a set size.
 
 To perform this experiment, run:
 ```bash
-$ ./run
+$ make -j2
 ```

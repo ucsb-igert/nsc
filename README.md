@@ -14,6 +14,15 @@ network. These algorithms include:
 
 [sgt]: http://en.wikipedia.org/wiki/Spectral_graph_theory
 
+## Dependencies
+
+ * [Python 2.7](https://www.python.org/download/releases/2.7/)
+ * [matplotlib](http://matplotlib.org/)
+ * [numpy](http://www.numpy.org/)
+ * [scipy](http://www.scipy.org/)
+ * [networkx](https://networkx.github.io/)
+ * [Graphviz](http://www.graphviz.org/)
+
 ## Processing
 
 Several datasets are used to benchmark these algorithms. See `data/README.md`

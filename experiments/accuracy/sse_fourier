@@ -44,8 +44,9 @@ if __name__ == "__main__":
 
     num_nodes = len(data)
 
-    for i in range(1, num_nodes, 10):
+    for i in range(1, num_nodes, 100):
         sse = fourier.sse_compress_graph(graph, data, num_eig=i)
         budget = fourier.num_eigs_to_budget(i)
         print("%d,%d" % (budget, sse))
         sys.stdout.flush()
+        if sse == 0: break

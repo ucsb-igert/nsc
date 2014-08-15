@@ -10,24 +10,43 @@
 
 all: plot.png
 
-SMOOTH_DATA=../../data/Traffic/traffic_0.data
-GRAPH=../../data/Traffic/traffic.graph
 
-ROUGH_DATA=../../data/Traffic/traffic_random.data
+DATA_DIR=../../data
 
-smooth.slicetree.csv: ${SMOOTH_DATA} ${GRAPH}
-	./sse_slicetree $^ 1> $@
+DBLP_DATA=${DATA_DIR}/DBLP/reduced/1000.dblp_ai.data
+DBLP_GRAPH=${DATA_DIR}/DBLP/reduced/1000.dblp_ai.graph
 
-smooth.fourier.csv: ${SMOOTH_DATA} ${GRAPH}
-	./sse_fourier $^ 1> $@
+HUMAN_DATA=${DATA_DIR}/Human/reduced/1000.human_0.data
+HUMAN_GRAPH=${DATA_DIR}/Human/reduced/1000.human_0.graph
 
-rough.slicetree.csv: ${SMOOTH_DATA} ${GRAPH}
-	./sse_slicetree $^ 1> $@
+SYNTHETIC_DATA=${DATA_DIR}/Synthetic/reduced/1000.synthetic.data
+SYNTHETIC_GRAPH=${DATA_DIR}/Synthetic/reduced/1000.synthetic.graph
 
-rough.fourier.csv: ${SMOOTH_DATA} ${GRAPH}
-	./sse_fourier $^ 1> $@
+TRAFFIC_DATA=${DATA_DIR}/Traffic/reduced/1000.traffic_0.data
+TRAFFIC_GRAPH=${DATA_DIR}/Traffic/reduced/1000.traffic_0.graph
 
-smooth.plot.png: smooth.slicetree.csv smooth.fourier.csv
+TWITTER_DATA=${DATA_DIR}/Twitter/reduced/1000.twitter.data
+TWITTER_GRAPH=${DATA_DIR}/Twitter/reduced/1000.twitter.graph
+
+WIKIPEDIA_DATA=${DATA_DIR}/Wikipedia/reduced/1000.wiki-views-2010-day.data
+WIKIPEDIA_GRAPH=${DATA_DIR}/Wikipedia/reduced/1000.wiki-views-2010-day.graph
+
+# The order of these datasets matters. The program expects each of them to be in
+# this order: DBLP, Human, Synthetic, Traffic, Twitter, Wikipedia
+DATASETS=${DBLP_DATA} ${DBLP_GRAPH} \
+		 ${HUMAN_DATA} ${HUMAN_GRAPH} \
+		 ${SYNTHETIC_DATA} ${SYNTHETIC_GRAPH} \
+		 ${TRAFFIC_DATA} ${TRAFFIC_GRAPH} \
+		 ${TWITTER_DATA} ${TWITTER_GRAPH} \
+		 ${WIKIPEDIA_DATA} ${WIKIPEDIA_GRAPH}
+
+slicetree.csv: ${DATASETS}
+	./sse_slicetree $^ > $@
+
+fourier.csv: ${DATASETS}
+	./sse_fourier $^ > $@
+
+plot.png: slicetree.csv fourier.csv
 	./plot $^ $@
 
 clean:

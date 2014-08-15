@@ -10,10 +10,13 @@
 
 all: smooth.plot.png rough.plot.png
 
-SMOOTH_DATA=../../data/Traffic/traffic_0.data
-GRAPH=../../data/Traffic/traffic.graph
+#GRAPH=../../data/Traffic/traffic.graph
+#SMOOTH_DATA=../../data/Traffic/traffic_0.data
+#ROUGH_DATA=../../data/Traffic/traffic_random.data
 
-ROUGH_DATA=../../data/Traffic/traffic_random.data
+GRAPH=../../data/Human/human_0.graph
+SMOOTH_DATA=../../data/Human/human_0.data
+ROUGH_DATA=../../data/Human/human_0.random.data
 
 ${ROUGH_DATA}: ${SMOOTH_DATA}
 	../../tools/randomize < $^ > $@

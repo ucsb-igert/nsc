@@ -17,7 +17,6 @@ import algorithms.slicetree as st
 import subprocess
 
 import tools.graph_reader as graph_reader
-import tools.paths.synthetic as dataset
 import tools.reduce as r
 
 def slicetree_time(data_file, graph_file, budget):
@@ -30,16 +29,31 @@ def slicetree_time(data_file, graph_file, budget):
     subprocess.check_call(args, stdout=null)
     return time() - start
 
+def parse_arguments():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Computes the time it takes for a range of nodes on the given dataset."
+        )
+    parser.add_argument("data", type=argparse.FileType("rb"),
+        help="Data input file.")
+    parser.add_argument("graph", type=argparse.FileType("rb"),
+        help="Graph input file.")
+
+    return parser.parse_args()
+
 if __name__ == "__main__":
+
+    args = parse_arguments()
 
     times = []
 
     # Read in the network
-    with open(dataset.data, "r") as fdata:
-        data = r.read_data(fdata)
+    data = r.read_data(args.data)
+    graph = r.read_graph(args.graph)
 
-    with open(dataset.graph, "r") as fgraph:
-        graph = r.read_graph(fgraph)
+    # Find the number of nodes
+    num_nodes = len(data)
 
     # Budget (# of partitions or eigenvectors)
     b = 50
@@ -48,7 +62,7 @@ if __name__ == "__main__":
     graph_file = "/tmp/time_slicetree.graph"
 
     # Continually reduce the graph to these numbers of nodes
-    for n in range(100, 2501, 50):
+    for n in range(100, num_nodes, 100):
         # Reduce the graph; save it to a temporary location
         with open(data_file, "w") as fdataout, \
              open(graph_file, "w") as fgraphout:

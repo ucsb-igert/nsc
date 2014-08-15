@@ -1,7 +1,0 @@
-#!/bin/env python3.4
-
-from os import path
-import sys
-sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
-
-import tools.reduce

@@ -1,9 +1,8 @@
-# Accuracy Experiment
+# Datasets Experiment
 
-This experiment compares the accuracy of each algorithm with regard to the space
-used by the compressed network state.
+This experiment compares the error within all of the datasets.
 
 To perform this experiment, run:
 ```bash
-$ ./run
+$ make -j2
 ```
