@@ -53,7 +53,7 @@ def compress(csr_matrix, node_value, num_eig, f, compression_type=3):
     elements = compress_method(node_signal_value, compression_type, num_eig)
     error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
     stderr.write('Graph was compressed with a num_eig of {} and error of {}.\n'.format(num_eig, error))
-    np.savez(f, signal=node_signal_value[elements], position=elements)
+    np.savez(f, signal=node_signal_value[elements], position=elements, size=np.array(len(node_value)))
 
 def sse_compress_graph(csr_matrix, node_value, num_eig, compression_type=3):
     """
@@ -91,7 +91,7 @@ def sse_compress_graph(csr_matrix, node_value, num_eig, compression_type=3):
     error = SSE(node_value, to_graph_domain(node_signal_value[elements], eig_vecs[:,elements]))
     return error
 
-def decompress(csr_matrix, f):
+def decompress(csr_matrix, node_signal_value, elements):
     """
     Reads and decompresses the values for a node.
 
@@ -100,19 +100,18 @@ def decompress(csr_matrix, f):
     csr_matrix: scipy csr_matrix
         The adjacency matrix of the graph.
 
-    f: file path or handle
-        Compressed graph file. (.npz)
+    node_signal_values: numpy array
+        Values of nodes in the signal domain.
+
+    elements: numpy array
+        The indices of the signal values and eigenvectors that are kept.
 
     Returns
     -------
     decompressed_vals: numpy array
         Returns the values reconstructed by the fourier algorithm
     """
-    stderr.write('Loading the file...\n')
-    data = np.load(f)
-    node_signal_value = data['signal']
-    elements = data['position']
-    stderr.write('Signal file loaded.\n')
+
     eig_vals, eig_vecs = laplacian_eigs(csr_matrix)
     decompressed_vals = to_graph_domain(node_signal_value, eig_vecs[:,elements])
     return decompressed_vals

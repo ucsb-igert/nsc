@@ -8,6 +8,7 @@ import fourier
 import argparse
 import sys
 from os import path
+import numpy as np
 
 sys.path.append(path.dirname(path.realpath(path.join(__file__, '../..'))))
 import tools.graph_reader as graph_reader
@@ -22,11 +23,13 @@ parser.add_argument("signal", type=argparse.FileType("rb"),
 
 if __name__ == '__main__':
     args = parser.parse_args()
-
-    graph = graph_reader.read_graph(args.graph, len(data))
-
-    if args.budget == 0:
-        args.budget = len(data)/2
-
-    fourier.decompress(graph, args.signal)
+    sys.stderr.write('Loading the files...\n')
+    data = np.load(args.signal)
+    node_signal_value = data['signal']
+    elements = data['position']
+    graph = graph_reader.read_graph(args.graph, data['size'])
+    sys.stderr.write('Signal and graph file loaded.\n')
+    decompressed = fourier.decompress(graph, node_signal_value, elements)
+    for i,v in enumerate(decompressed):
+        sys.stdout.write('{},{}\n'.format(i,v))
 
