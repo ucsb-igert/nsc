@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # Usage: ./process_all
+#
+# FIXME: Move all reduction and processing scripts into a Makefile. This would
+# allow much of the work to be done in parallel.
 
 # DBLP dataset
 ./DBLP/reduce
@@ -17,7 +20,7 @@
 ./Traffic/reduce
 
 # Twitter dataset
-make -f ./Twitter/Makefile
+./Twitter/process
 ./Twitter/reduce
 
 # Wikipedia dataset
