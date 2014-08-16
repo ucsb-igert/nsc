@@ -2,6 +2,11 @@
 """
 Reduces a graph to the number of specified nodes.
 
+**FIXME**: This works by selecting nodes at random to do a breadth-first search
+on.  For networks with many connected components, this results in many nodes
+without edges. Instead, nodes should be selected from the largest connected
+components first.
+
 Author: Jason White
 """
 from __future__ import print_function, unicode_literals, absolute_import, division
@@ -11,6 +16,8 @@ import argparse
 import random
 
 def read_data(f):
+    """Reads the nodes from the specified file handle.
+    """
     data = {}
 
     for line in f:
@@ -20,6 +27,8 @@ def read_data(f):
     return data
 
 def read_graph(f):
+    """Reads the edges from the specified file handle.
+    """
     graph = {}
 
     for line in f:
@@ -54,6 +63,8 @@ def bfs(center, graph, visited):
             pass
 
 def reduce_graph(data, graph, count, fdataout, fgraphout):
+    """Reduces a graph to the given node count.
+    """
     nodes = set(data.keys())
 
     # Nodes visited.
@@ -95,6 +106,8 @@ def reduce_graph(data, graph, count, fdataout, fgraphout):
             pass
 
 def reduce_graphs(fdata, fgraph, datafmt, graphfmt, counts):
+    """Reduces multiple graphs in one go once.
+    """
     print("Reading data...", file=stderr)
     data = read_data(fdata)
 
