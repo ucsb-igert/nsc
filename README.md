@@ -23,6 +23,13 @@ network. These algorithms include:
  * [networkx](https://networkx.github.io/)
  * [Graphviz](http://www.graphviz.org/)
 
+## Cloning
+
+This project uses submodules. To clone all submodules as well, run:
+```bash
+$ git clone --recursive https://github.com/ucsb-igert/nsc.git
+```
+
 ## Processing
 
 Several datasets are used to benchmark these algorithms. See `data/README.md`
