@@ -9,6 +9,25 @@ the compression algorithms.
 
 # Relevant Work
 
+There are four papers relevant to this project. These are:
+
+ * Arlei Silva, Petko Bogdanov, Ambuj K. Singh. "Network State Summarization via
+   In-Graph Compression". Under review, 2014.
+ * David Shuman, et al. "[The Emerging Field of Signal Processing on Graphs:
+   Extending high-dimensional data analysis to networks and other irregular
+   domains.][signals]" Signal Processing Magazine, 2013.
+ * Zachi Karni, and Craig Gotsman. "[Spectral Compression of Mesh
+   Geometry.][spectral]" Proceedings of the 27th annual conference on Computer
+   graphics and interactive techniques. ACM Press/Addison-Wesley Publishing Co.,
+   2000.
+ * David Hammond, Pierre Vandergheynst, and Remi Gribonval. "[Wavelets on Graphs
+   via Spectral Graph Theory.][wavelets]" Applied and Computational Harmonic
+   Analysis, 2011.
+
+[signals]: http://dx.doi.org/10.1109/MSP.2012.2235192
+[spectral]: http://dx.doi.org/10.1145/344779.344924
+[wavelets]: http://dx.doi.org/10.1016/j.acha.2010.04.005
+
 # Data Processing
 
 We were provided with five real-world datasets to test the different methods on.
@@ -34,7 +53,7 @@ These include:
 The other two datasets needed to be processed. These include:
 
  * **Twitter**: This consists of all the raw tweets from June through December
-   2009. Also included is a list of which users are following who. The raw
+   of 2009. Also included is a list of which users are following who. The raw
    tweets were processed to generate a network where nodes are users, a node's
    value is the average response time for that user to retweet another user's
    message, and an edge indicates that a user is following another user. Users
