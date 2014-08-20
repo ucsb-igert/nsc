@@ -1,13 +1,13 @@
-% sgwt_demo3 : Image decomposition with SGWT wavelets based on local adjacency.
+% sgwt_wavelet_compression : Graph compression using the wavelet method. 
 %
-% This demo builds the SGWT transform on a graph representing 
-% adjacency on a pixel mesh with 4-nearest neighbor connectivity.
-% This demonstrates inverse on problem with large dimension.
+% This demo is a branch of the demo/sgwt_demo3.m file.
 %
-% The demo loads an image file and decomposes the image with the SGWT,
-% showing the coefficients as images at each scale. The demo does not show
-% the individual wavelets (this could be done by replacing the input 
-% image by a "delta image" with a single unit nonzero pixel) .
+% Inputs:
+% A - Adjacency matrix
+% 	Example: A = [ 0 1 0 0 1 0; 1 0 1 0 1 0;  0 1 0 1 0 0; 0 0 1 0 1 1 ; 1 1 0 1 0 0; 0 0 0 1 0 0];
+%  - Chebyshev coefficients (c(1+j) is jth coefficient)
+% im: values of the nodes to be compressed.
+% 	Example: im = [1 2 7 4 5 6];
 %
 % The inverse is then computed, from the original coefficients as well as 
 % from a modified set of coefficients where only coefficients at one
@@ -36,10 +36,6 @@
 function sgwt_wavelet_compression(A, im)
 global SGWT_ROOT
 close all;
-
-% Adjacency matrix
-% A = [ 0 1 0 0 1 0; 1 0 1 0 1 0;  0 1 0 1 0 0; 0 0 1 0 1 1 ; 1 1 0 1 0 0; 0 0 0 1 0 0]
-% im = [1 2 7 4 5 6];
 
 im = im';
 % transform
