@@ -1,3 +1,0 @@
-#!/bin/sh
-# Usage: ./graph < twitter_rv.net > twitter.graph
-sed 's/^\([0-9]\+\)\t\([0-9]\+\)$/\1,\2/'

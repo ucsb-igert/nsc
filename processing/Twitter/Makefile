@@ -33,5 +33,6 @@ all: ${OUT_DATA} ${OUT_GRAPH}
 ${OUT_DATA}: ${SRC_USERMAP} ${SRC_TWEETS}
 	./data --usermap ${SRC_USERMAP} ${SRC_TWEETS} > $@
 
+# This simply reformats the 
 ${OUT_GRAPH}: ${SRC_GRAPH} ${OUT_DATA}
-	./graph ${SRC_GRAPH} | ../../tools/prune_edges.py ${OUT_DATA} > $@
+	sed 's/\t/,/' ${SRC_GRAPH} | ../../tools/prune_edges.py ${OUT_DATA} > $@
