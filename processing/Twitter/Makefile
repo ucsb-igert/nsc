@@ -33,6 +33,9 @@ all: ${OUT_DATA} ${OUT_GRAPH}
 ${OUT_DATA}: ${SRC_USERMAP} ${SRC_TWEETS}
 	./data --usermap ${SRC_USERMAP} ${SRC_TWEETS} > $@
 
-# This simply reformats the 
+# Reformat the followers file and prunes edges between nodes that don't exist.
 ${OUT_GRAPH}: ${SRC_GRAPH} ${OUT_DATA}
 	sed 's/\t/,/' ${SRC_GRAPH} | ../../tools/prune_edges.py ${OUT_DATA} > $@
+
+clean:
+	${RM} ${OUT_DATA} ${OUT_GRAPH}
