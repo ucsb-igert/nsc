@@ -5,7 +5,6 @@
 % Inputs:
 % A - Adjacency matrix
 % 	Example: A = [ 0 1 0 0 1 0; 1 0 1 0 1 0;  0 1 0 1 0 0; 0 0 1 0 1 1 ; 1 1 0 1 0 0; 0 0 0 1 0 0];
-%  - Chebyshev coefficients (c(1+j) is jth coefficient)
 % im: values of the nodes to be compressed.
 % 	Example: im = [1 2 7 4 5 6];
 %
