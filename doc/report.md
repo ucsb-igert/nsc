@@ -13,7 +13,7 @@ There are four papers relevant to this project:
 
  * Arlei Silva, Petko Bogdanov, Ambuj K. Singh. "Network State Summarization via
    In-Graph Compression". Under review, 2014.
-   
+
     This paper introduces a new network state compression algorithm called Slice
     Tree. Two variants of this algorithm are given: greedy and sampling. These
     algorithms are further detailed in the next section.
@@ -46,9 +46,11 @@ There are four papers relevant to this project:
 
 ## Spectral Graph Wavelets
 
-# Data Processing
+# Datasets
 
 We were provided with five real-world datasets to test the different methods on.
+
+## Processing
 
 Three of these datasets were already processed and in the form of a network.
 These include:
@@ -84,6 +86,24 @@ The other two datasets needed to be processed. These include:
    article, and an edge means that one article links to another. The network
    state consists of view counts from the years 2008 through 2011. This network
    consists of 15,148,210 nodes and 2,434,781 edges.
+
+Each of these datasets are also documented in their respective directories under
+`data/`.
+
+## Reduction
+
+Additionally, each of these datasets were reduced to 1000 nodes each. The script
+that does this is `reduce.py` under `tools/`. It works by choosing a random node
+(or center) from the network and doing a breadth-first search from that
+location. This continues until the specified number of nodes are collected or if
+the pool of nodes is exhausted. Then, the selected nodes and the edges between
+them are written out to their respective `.data` and `.graph` files.
+
+There is one major problem with this reduction approach. For networks with many
+small connected components (i.e., disconnected sub-networks), such as the
+Wikipedia network, this results in networks with very few or no edges. Ideally,
+nodes should be drawn from the largest connected components first. However, due
+to time constraints, this was never implemented.
 
 # Experiments
 
