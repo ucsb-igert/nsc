@@ -9,17 +9,27 @@ the compression algorithms.
 
 # Relevant Work
 
-There are four papers relevant to this project. These are:
+There are four papers relevant to this project:
 
  * Arlei Silva, Petko Bogdanov, Ambuj K. Singh. "Network State Summarization via
    In-Graph Compression". Under review, 2014.
+   
+    This paper introduces a new network state compression algorithm called Slice
+    Tree. Two variants of this algorithm are given: greedy and sampling. These
+    algorithms are further detailed in the next section.
+
  * David Shuman, et al. "[The Emerging Field of Signal Processing on Graphs:
    Extending high-dimensional data analysis to networks and other irregular
    domains.][signals]" Signal Processing Magazine, 2013.
+
+    This paper introduces the concept of transforming network state into the
+    signal domain.
+
  * Zachi Karni, and Craig Gotsman. "[Spectral Compression of Mesh
    Geometry.][spectral]" Proceedings of the 27th annual conference on Computer
    graphics and interactive techniques. ACM Press/Addison-Wesley Publishing Co.,
    2000.
+
  * David Hammond, Pierre Vandergheynst, and Remi Gribonval. "[Wavelets on Graphs
    via Spectral Graph Theory.][wavelets]" Applied and Computational Harmonic
    Analysis, 2011.
@@ -27,6 +37,14 @@ There are four papers relevant to this project. These are:
 [signals]: http://dx.doi.org/10.1109/MSP.2012.2235192
 [spectral]: http://dx.doi.org/10.1145/344779.344924
 [wavelets]: http://dx.doi.org/10.1016/j.acha.2010.04.005
+
+# Methods
+
+## Slice Tree
+
+## Spectral Graph Fourier
+
+## Spectral Graph Wavelets
 
 # Data Processing
 
@@ -59,21 +77,13 @@ The other two datasets needed to be processed. These include:
    message, and an edge indicates that a user is following another user. Users
    who have not made any retweets are not included in the network. Similarly,
    retweets that do not exactly match the original message are also not factored
-   in.
+   in. The resulting network consists of 773,977 nodes and 465,150 edges.
 
  * **Wikipedia**: Only minor processing was needed for the Wikipedia dataset.
    Each node is an article, the node value is the total number of views for that
    article, and an edge means that one article links to another. The network
    state consists of view counts from the years 2008 through 2011. This network
-   has 15,148,210 nodes and 2,434,781 edges.
-
-# Methods
-
-## Slice Tree
-
-## Spectral Graph Fourier
-
-## Spectral Graph Wavelets
+   consists of 15,148,210 nodes and 2,434,781 edges.
 
 # Experiments
 
