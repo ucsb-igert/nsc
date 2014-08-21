@@ -16,7 +16,7 @@ There are four papers relevant to this project:
 
     This paper introduces a new network state compression algorithm called Slice
     Tree. Two variants of this algorithm are given: greedy and sampling. These
-    algorithms are further detailed in the next section.
+    algorithms are detailed further in the next section.
 
  * David Shuman, et al. "[The Emerging Field of Signal Processing on Graphs:
    Extending high-dimensional data analysis to networks and other irregular
@@ -40,7 +40,35 @@ There are four papers relevant to this project:
 
 # Methods
 
+In general, network state compression algorithms work like this:
+
+![bigidea](the-big-idea.png "The Big Idea")
+
+The compression algorithm takes in the state of the network and its topology and
+compresses the state into a format specific to the algorithm. The size (in
+bytes) of the compressed state is determined by the *budget* passed to the
+algorithm. For decompression, the algorithm translates the compressed state back
+to the same format as what was passed in originally. Thus, there will be some
+information loss after decompression. It is important to note that the topology
+of the network is not compressed, only the values associated with each node.
+
+The difference between the original network state and the network state produced
+by the algorithm is said to be the *error*. This is measured as the [Sum of
+Squared Errors (SSE)][SSE] and is computed by summing up the squared differences
+between the original and decompressed node values.
+
+[SSE]: http://en.wikipedia.org/wiki/Residual_sum_of_squares
+
+We studied three different algorithms for network state compression. Most of our
+time was spent studying Slice Tree and implementing the Spectral Graph Fourier
+algorithm. The third algorithm, Spectral Graph Wavelets, was not studied in
+great depth nor were we able to find or devise a working implementation under
+our time constraints. Thus, information on this algorithm is sparse.
+
 ## Slice Tree
+
+Slice Tree was created by Arlei Silva and described in his (currently
+unpublished) paper "Network State Summarization via In-Graph Compression".
 
 ## Spectral Graph Fourier
 
@@ -48,12 +76,10 @@ There are four papers relevant to this project:
 
 # Datasets
 
-We were provided with five real-world datasets to test the different methods on.
+We were provided with five real-world datasets to test the effectiveness of the
+different methods on.
 
-## Processing
-
-Three of these datasets were already processed and in the form of a network.
-These include:
+Three of these datasets were already processed and in the form of a network:
 
  * **Traffic**: A highway network of Los Angeles, CA with node values
    corresponding to average speeds at highway locations along time. For each
@@ -70,7 +96,7 @@ These include:
    publication counts are values. An edge between nodes indicates co-authorship.
    This network consists of 1,291,210 nodes and 5,227,553 edges.
 
-The other two datasets needed to be processed. These include:
+The other two datasets needed to be processed:
 
  * **Twitter**: This consists of all the raw tweets from June through December
    of 2009. Also included is a list of which users are following who. The raw
@@ -87,10 +113,8 @@ The other two datasets needed to be processed. These include:
    state consists of view counts from the years 2008 through 2011. This network
    consists of 15,148,210 nodes and 2,434,781 edges.
 
-Each of these datasets are also documented in their respective directories under
+These datasets are also documented in their respective directories under
 `data/`.
-
-## Reduction
 
 Additionally, each of these datasets were reduced to 1000 nodes each. The script
 that does this is `reduce.py` under `tools/`. It works by choosing a random node
@@ -99,9 +123,9 @@ location. This continues until the specified number of nodes are collected or if
 the pool of nodes is exhausted. Then, the selected nodes and the edges between
 them are written out to their respective `.data` and `.graph` files.
 
-There is one major problem with this reduction approach. For networks with many
-small connected components (i.e., disconnected sub-networks), such as the
-Wikipedia network, this results in networks with very few or no edges. Ideally,
+There is one major problem with this approach to reduction. For networks with
+many small connected components (i.e., disconnected sub-networks), such as the
+Wikipedia network, this results in networks with very few or no edges. Instead,
 nodes should be drawn from the largest connected components first. However, due
 to time constraints, this was never implemented.
 
