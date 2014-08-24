@@ -267,3 +267,28 @@ For dynamic networks, node values may change, and new nodes and may be added
 over time. Analysis of these changes can be done to understand how values are
 evolving. Abrupt or unexpected changes to the network may also be identified.
 Again, this can be useful for real-world networks such as traffic networks.
+
+## Code Base
+
+Our code base can be improved quite a bit. There are a couple of major changes
+that can be made:
+
+ * Merge dataset processing, reduction, and experiments into one or more
+   Makefiles. This will allow these actions to be done in parallel using `make
+   -j8`, for example. This will also automate everything and aid
+   reproducibility.
+
+   However, using `make` for everything may prove challenging because it does
+   not support multiple outputs for a single rule very well.  Other build
+   systems such as [Tup][], [SCons][], [CMake][], [Rake][], or [Ninja][] may be
+   better suited.
+
+ * Python is used because it is fast to develop and prototype in. However,
+   execution time is not so fast. Most of the tools can be rewritten in a faster
+   language (such as C++ or D) and parallelized to give significant speedups.
+
+[Tup]: http://gittup.org/tup/
+[SCons]: http://www.scons.org/
+[CMake]: http://www.cmake.org/
+[Rake]: https://github.com/jimweirich/rake
+[Ninja]: http://martine.github.io/ninja/
