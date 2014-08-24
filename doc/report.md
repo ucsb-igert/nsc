@@ -191,11 +191,11 @@ to time constraints, this was never implemented.
 
 # Experiments and Results
 
-We performed three experiments using the Slice Tree and Spectral Graph Fourier
-algorithms. Note that, due to time constraints, the Spectral Graph Wavelets
-method is not included in these experiments. The purpose of these experiments is
-to assess the effectiveness of each algorithm in terms of scalability, accuracy,
-and sensitivity to the network.
+We performed three experiments using Greedy Slice Tree and Spectral Graph
+Fourier algorithms. Note that, due to time constraints, the Spectral Graph
+Wavelets method is not included in these experiments. The purpose of these
+experiments is to assess the effectiveness of each algorithm in terms of
+scalability, accuracy, and sensitivity to the network.
 
 ## Scalability
 
@@ -237,10 +237,33 @@ because the traffic network is smooth.
 
 # Future Experiments
 
+Here are some ideas for future experiments:
+
+ * Do multiple compression-decompression cycles to see how the SSE changes from
+   the original network state and the final decompressed network state. For
+   Slice Tree, it is expected that the SSE should not change regardless of the
+   number of compression-decompression cycles because the same slices should be
+   selected each time.
+
+ * Compare the scalability and accuracy of the two versions of Slice Tree.
+
 # Future Work
 
 ## Outlier Detection
 
+Find nodes with outlier values from the compressed network state. For Slice
+Tree, the idea is that outliers should be put into their own slices because they
+have no similar values around it. This can be useful, for example, in traffic
+networks where we want to find areas of congestion.
+
 ## Value Prediction
 
+Predicting the value of a node based on the compressed values of its neighbors.
+This can be useful for making predictions about changes to a node's state.
+
 ## Trend Analysis/Change
+
+For dynamic networks, node values may change, and new nodes and may be added
+over time. Analysis of these changes can be done to understand how values are
+evolving. Abrupt or unexpected changes to the network may also be identified.
+Again, this can be useful for real-world networks such as traffic networks.
