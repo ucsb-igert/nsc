@@ -189,15 +189,51 @@ Wikipedia network, this results in networks with very few or no edges. Instead,
 nodes should be drawn from the largest connected components first. However, due
 to time constraints, this was never implemented.
 
-# Experiments
+# Experiments and Results
+
+We performed three experiments using the Slice Tree and Spectral Graph Fourier
+algorithms. Note that, due to time constraints, the Spectral Graph Wavelets
+method is not included in these experiments. The purpose of these experiments is
+to assess the effectiveness of each algorithm in terms of scalability, accuracy,
+and sensitivity to the network.
 
 ## Scalability
 
+For this experiment, we use Los Angeles traffic network with ~1900 nodes.  We
+set a fixed compression size of 100 bytes and vary the number of nodes in the
+network using the graph reduction tool. The number of nodes range from 100 to
+~1900 nodes. We start from 100 nodes to ensure that the budget does not exceed
+the number of nodes. The time taken to perform the network state compression for
+each algorithm is recorded.
+
+From this, we can see a clear trend that the Spectral Graph Fourier method takes
+far longer than Slice Tree as the number of nodes increases. Thus, Slice Tree is
+more scalable.
+
 ## Accuracy
+
+For this experiment, we keep the number of nodes fixed and vary the compressed
+size (or budget) and measure the SSE for each algorithm. As the budget
+approaches the total size of the network state, the SSE should approach 0. With
+a minimal budget, the SSE should be at a maximum. Again, we use the traffic
+network for this experiment, thus the maximum SSE is specific to this network.
+
+From this, we can see that Slice Tree tends to zero significantly faster than
+Fourier. Thus, for this dataset, Slice Tree gives a more accurate compressed
+network state. This is to be expected because the Los Angeles traffic network
+has values that are smooth across the network.
 
 ## Dataset Comparison
 
-# Results and Analysis
+For this experiment, we want to compare the relative compression accuracy for
+each algorithm and each dataset. Each dataset is reduced to 1000 nodes and
+compressed to 600 bytes. We measure the SSE of the compressed state that each
+algorithm produces.
+
+We find that, in general, Slice Tree produces a slightly more accurate
+compressed network state. Yet, for the Los Angeles traffic network, Slice Tree
+gives much better results than the Fourier method. Again, this is to be expected
+because the traffic network is smooth.
 
 # Future Experiments
 
