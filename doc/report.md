@@ -15,8 +15,7 @@ There are four papers relevant to this project:
    In-Graph Compression". Under review, 2014.
 
     This paper introduces a new network state compression algorithm called Slice
-    Tree. Two variants of this algorithm are given: greedy and sampling. These
-    algorithms are detailed further in the next section.
+    Tree. Details of this algorithm will be discussed in the next section.
 
  * David Shuman, et al. "[The Emerging Field of Signal Processing on Graphs:
    Extending high-dimensional data analysis to networks and other irregular
@@ -38,24 +37,32 @@ There are four papers relevant to this project:
 [spectral]: http://dx.doi.org/10.1145/344779.344924
 [wavelets]: http://dx.doi.org/10.1016/j.acha.2010.04.005
 
-# Methods
+# Algorithms
 
 In general, network state compression algorithms work like this:
 
 ![bigidea](the-big-idea.png "The Big Idea")
 
-The compression algorithm takes in the state of the network and its topology and
-compresses the state into a format specific to the algorithm. The size (in
-bytes) of the compressed state is determined by the *budget* passed to the
-algorithm. For decompression, the algorithm translates the compressed state back
-to the same format as what was passed in originally. Thus, there will be some
-information loss after decompression. It is important to note that the topology
-of the network is not compressed, only the values associated with each node.
+ 1. The compression algorithm takes in the state of the network and its
+    topology.
+ 2. The algorithm compresses the network state and produces an
+    algorithm-specific compressed network state. The size (in bytes) of the
+    compressed state is determined by the *budget* given to the algorithm. Thus,
+    because the size of the compressed state can be set, it must be a lossy
+    compression.
+ 3. Finally, the network state can be decompressed, but with some information
+    loss.
 
-The difference between the original network state and the network state produced
-by the algorithm is said to be the *error*. This is measured as the [Sum of
-Squared Errors (SSE)][SSE] and is computed by summing up the squared differences
-between the original and decompressed node values.
+It is important to note that the *topology* of the network is never compressed,
+only the *values* associated with each node. Thus, the only different between
+the original network and the compressed-then-decompressed network is the node
+values (or state). The edges don't change.
+
+We measure the error of the compression by taking the [Sum of Squared Errors
+(SSE)][SSE]. This is computed by looking at the original network state and the
+new network state after a compression-decompression cycle. For each pair of
+nodes corresponding to the two networks, the difference between their states is
+squared and summed up, producing the *error* of the compression.
 
 [SSE]: http://en.wikipedia.org/wiki/Residual_sum_of_squares
 
@@ -67,8 +74,61 @@ our time constraints. Thus, information on this algorithm is sparse.
 
 ## Slice Tree
 
-Slice Tree was created by Arlei Silva and described in his (currently
-unpublished) paper "Network State Summarization via In-Graph Compression".
+Slice Tree was created by Arlei Silva and is described in his paper "Network
+State Summarization via In-Graph Compression" (which is unpublished at the time
+of this writing).
+
+Slice Tree partitions a network into smooth regions such that each region can be
+compactly represented by a single value. This single value summarizes the values
+of the nodes inside the region by taking the average of those values. A *smooth*
+region is defined to be one that contains values that do not significantly
+differ from each other across the topology of the region.
+
+As slices are chosen, they are inserted into a "slice tree". Thus, forming
+something like this:
+
+![slicetree](slice-tree.png "Example of a Slice Tree")
+
+Each leaf node corresponds to a region of the network.
+
+There are two main variants of Slice Tree: a greedy version and an approximate
+version. Each variant determines how a slice is chosen that is to be inserted
+into the tree.
+
+### Greedy Slice
+
+While constructing the Slice Tree, the greedy algorithm selects the best slice
+at each iteration. The best slice is defined to be the one that contributes to
+the highest error reduction. All nodes and all possible radii at those nodes are
+searched to find the largest error reduction. Intuitively, *error reduction* is
+the amount of error that is removed by introducing another slice. Put another
+way, a network with 1 slice will have the greatest amount of error because all
+the node values in the network will be reduced to a single node value. By
+taking a second slice, and grouping nodes with similar values into that slice,
+the error should be further reduced. As the number of slices approaches the
+number of nodes, the error approaches 0. The goal is to make the error approach
+0 as quickly as possible while the number of slices increases.
+
+### Approximate Slice
+
+Sampling takes a slightly different approach. Instead of finding the best slice
+at a particular iteration, it *approximates* the best slice. This is done by
+generating a set of all possible slices, and then pruning those slices until
+only the best approximate slice is left. Using a small sample of node values
+from the entire network, the slice from the list of candidate slices with the
+maximum estimated error reduction is used as the current best slice. This is
+done for each iteration of a loop during which the pool of candidate slices is
+pruned. Thus, the slice with the best *estimated* error reduction is returned by
+this algorithm.
+
+There are three parameters used to tune this algorithm:
+
+ * A confidence parameter *δ* (delta).
+ * An approximation constant *ρ* (rho).
+ * A sampling rate *π* (pi).
+
+If `δ = 0`, `ρ = 1`, and `π = 1`, then the approximate slice tree algorithm is
+the same as the greedy version and finds the best slice without approximation.
 
 ## Spectral Graph Fourier
 
